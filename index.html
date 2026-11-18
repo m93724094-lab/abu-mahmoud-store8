@@ -533,32 +533,46 @@
         });
     }
 
-    async function initCloudStore() {
+async function initCloudStore() {
+    const cached = localStorage.getItem('storeData_cache');
+    if (cached) {
         try {
-            const res = await fetch(`${DB_URL}/storeData.json`);
-            const data = await res.json();
-            if (data) {
-                storeData.products = data.products ? Object.values(data.products) : [];
-                storeData.orders = data.orders ? Object.values(data.orders) : [];
-                if (data.settings) {
-                    storeData.settings = { ...storeData.settings, ...data.settings };
-                    if (data.settings.theme) {
-                        storeData.settings.theme = { ...storeData.settings.theme, ...data.settings.theme };
-                    }
-                }
-            } else {
-                await syncToCloud();
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
+            storeData = JSON.parse(cached);
             applyStoreUI();
             renderProducts();
             updateCartBadge();
             generateStoreQR();
             document.getElementById('loadingOverlay').style.display = 'none';
-        }
+        } catch (e) { console.error(e); }
     }
+
+    try {
+        const res = await fetch(`${DB_URL}/storeData.json`);
+        const data = await res.json();
+        if (data) {
+            storeData.products = data.products ? (Array.isArray(data.products) ? data.products : Object.values(data.products)) : [];
+            storeData.orders = data.orders ? (Array.isArray(data.orders) ? data.orders : Object.values(data.orders)) : [];
+            if (data.settings) {
+                storeData.settings = { ...storeData.settings, ...data.settings };
+                if (data.settings.theme) {
+                    storeData.settings.theme = { ...storeData.settings.theme, ...data.settings.theme };
+                }
+            }
+            try { localStorage.setItem('storeData_cache', JSON.stringify(storeData)); } catch (e) {}
+        } else {
+            await syncToCloud();
+        }
+    } catch (err) {
+        console.error(err);
+    } finally {
+        applyStoreUI();
+        renderProducts();
+        updateCartBadge();
+        generateStoreQR();
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+}
+
 
     async function syncToCloud() {
         await fetch(`${DB_URL}/storeData.json`, {
