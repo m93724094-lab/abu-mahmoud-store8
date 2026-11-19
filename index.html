@@ -514,6 +514,8 @@
         });
     }
         async function initCloudStore() {
+            document.getElementById('loadingOverlay').style.display = 'none'; applyStoreUI(); renderCategories();
+            
         const cached = localStorage.getItem('storeData_cache');
         if (cached) {
             try {
