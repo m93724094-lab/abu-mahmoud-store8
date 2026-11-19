@@ -635,134 +635,71 @@ async function initCloudStore() {
         renderProducts();
     }
 
-    function renderProducts() {
-        const grid = document.getElementById('productsGrid');
-        const query = document.getElementById('searchInput').value.trim().toLowerCase();
-        const filtered = storeData.products.filter(p =>
-            p.name.toLowerCase().includes(query) || (p.desc && p.desc.toLowerCase().includes(query))
-        );
+        let displayLimit = 20; // عدد المنتجات المعروضة في البداية
 
-        if (filtered.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">لا توجد قطع متوفرة حالياً تطابق بحثك.</div>`;
-            return;
-        }
-
-        grid.innerHTML = filtered.map(p => {
-            let priceHtml = '';
-            if (pricingMode === 'auto') {
-                priceHtml = `
-                    <div class="price-row"><span>سعر المفرق:</span> <span class="price-highlight">${p.retail} $</span></div>
-                    <div class="price-row"><span>سعر الجملة (${p.minQty}+):</span> <strong style="color:#22c55e;">${p.wholesale} $</strong></div>
-                `;
-            } else if (pricingMode === 'retail') {
-                priceHtml = `<div class="price-row"><span>سعر المفرق:</span> <span class="price-highlight">${p.retail} $</span></div>`;
-            } else {
-                priceHtml = `<div class="price-row"><span>سعر الجملة:</span> <span class="price-highlight">${p.wholesale} $</span></div>`;
-            }
-
-            return `
-                <div class="product-card">
-                    ${p.image ? `<img src="${p.image}" class="product-img" alt="${p.name}">` : `<div class="product-img">🏍</div>`}
-                    <div class="product-info">
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-desc">${p.desc || ''}</div>
-                        <div class="price-box">${priceHtml}</div>
-                    </div>
-                    <div class="card-actions">
-                        <input type="number" min="1" value="1" id="qty-${p.id}" class="qty-input">
-                        <button class="primary-btn" style="flex-grow:1;" onclick="addToCart('${p.id}')">➕ أضف للسلة</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+function renderProducts(resetLimit = true) {
+    const grid = document.getElementById('productsGrid'); // تأكد أن هذا هو نفس الـ id الموجود في السطر 639 عندك
+    const query = document.getElementById('searchInput').value.toLowerCase(); // تأكد أن هذا نفس الـ id في السطر 640
+    
+    if (resetLimit && !query) {
+        displayLimit = 20;
     }
 
-    function addToCart(id) {
-        const qtyInput = document.getElementById(`qty-${id}`);
-        const qty = Math.max(1, parseInt(qtyInput.value) || 1);
-        const existing = cart.find(item => item.id === id);
-        if (existing) {
-            existing.qty += qty;
+    const filtered = storeData.products.filter(p => 
+        p.name.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div style="text-align:center; padding:20px; color:#aaa;">لا توجد نتائج مطابقة</div>`;
+        return;
+    }
+
+    // إذا لم يكن هناك بحث، نعرض فقط العدد المحدد لتسريع الفتح عند الزبون
+    const itemsToShow = query ? filtered : filtered.slice(0, displayLimit);
+
+    let html = itemsToShow.map(p => {
+        let priceHtml = '';
+        if (pricingMode === 'auto') {
+            priceHtml = `
+                <div class="price-row"><span>المفرق:</span> <span>${p.retailPrice}</span></div>
+                <div class="price-row"><span>الجملة:</span> <span>${p.wholesalePrice}</span></div>
+            `;
+        } else if (pricingMode === 'retail') {
+            priceHtml = `<div class="price-row"><span>المفرق:</span> <span>${p.retailPrice}</span></div>`;
         } else {
-            cart.push({ id, qty });
-        }
-        saveCartLocal();
-        updateCartBadge();
-        qtyInput.value = 1;
-    }
-
-    function saveCartLocal() {
-        localStorage.setItem('abuMahmoudCart', JSON.stringify(cart));
-    }
-
-    function updateCartBadge() {
-        const count = cart.reduce((sum, item) => sum + item.qty, 0);
-        document.getElementById('cartCount').textContent = count;
-    }
-
-    function getUnitPrice(product, qty) {
-        if (pricingMode === 'retail') return { price: product.retail, type: 'مفرق' };
-        if (pricingMode === 'wholesale') return { price: product.wholesale, type: 'جملة' };
-        return qty >= product.minQty
-            ? { price: product.wholesale, type: 'جملة' }
-            : { price: product.retail, type: 'مفرق' };
-    }
-
-    function openCart() {
-        renderCartItems();
-        openModal('cartModal');
-    }
-
-    function renderCartItems() {
-        const container = document.getElementById('cartItemsContainer');
-        let total = 0;
-
-        if (cart.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color: var(--text-muted); padding: 20px;">السلة فارغة حالياً.</p>`;
-            document.getElementById('cartTotal').textContent = '0';
-            return;
+            priceHtml = `<div class="price-row"><span>الجملة:</span> <span>${p.wholesalePrice}</span></div>`;
         }
 
-        container.innerHTML = cart.map((item, idx) => {
-            const prod = storeData.products.find(p => p.id === item.id);
-            if (!prod) return '';
-            const { price, type } = getUnitPrice(prod, item.qty);
-            const sub = price * item.qty;
-            total += sub;
-
-            return `
-                <div class="cart-item">
-                    <div>
-                        <strong>${prod.name}</strong> <span class="badge">${type}</span>
-                        <div style="font-size:0.85rem; color: var(--text-muted);">${item.qty} × ${price} $ = <strong>${sub.toFixed(2)} $</strong></div>
-                    </div>
-                    <div style="display:flex; gap:5px; align-items:center;">
-                        <button onclick="changeCartQty(${idx}, -1)" style="padding:4px 9px;">-</button>
-                        <span>${item.qty}</span>
-                        <button onclick="changeCartQty(${idx}, 1)" style="padding:4px 9px;">+</button>
-                        <button onclick="removeCartItem(${idx})" style="padding:4px 9px; background:#991b1b;">🗑</button>
-                    </div>
+        return `
+            <div class="product-card">
+                ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : ''}
+                <div class="product-info">
+                    <h3>${p.name}</h3>
+                    ${priceHtml}
                 </div>
-            `;
-        }).join('');
+            </div>
+        `;
+    }).join('');
 
-        document.getElementById('cartTotal').textContent = total.toFixed(2);
+    // إضافة زر "عرض المزيد" إذا كان هناك منتجات متبقية
+    if (!query && filtered.length > displayLimit) {
+        html += `
+            <div style="grid-column: 1 / -1; text-align: center; margin: 15px 0;">
+                <button onclick="loadMoreProducts()" style="padding: 12px 25px; background: #1d4ed8; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                    عرض المزيد (${filtered.length - displayLimit} قطعة متبقية)
+                </button>
+            </div>
+        `;
     }
 
-    function changeCartQty(idx, delta) {
-        cart[idx].qty += delta;
-        if (cart[idx].qty <= 0) cart.splice(idx, 1);
-        saveCartLocal();
-        updateCartBadge();
-        renderCartItems();
-    }
+    grid.innerHTML = html;
+}
 
-    function removeCartItem(idx) {
-        cart.splice(idx, 1);
-        saveCartLocal();
-        updateCartBadge();
-        renderCartItems();
-    }
+function loadMoreProducts() {
+    displayLimit += 20;
+    renderProducts(false);
+}
+
 
     function toggleShamCashBox() {
         const method = document.getElementById('paymentMethod').value;
