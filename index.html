@@ -1087,16 +1087,28 @@
         await syncToCloud();
         applyStoreUI();
         alert("تم حفظ الإعدادات بنجاح!");
-    }
+        }
 
-    function openModal(id) { document.getElementById(id).style.display = 'block'; }
+    function openModal(id) {
+        document.getElementById(id).style.display = 'block';
+        if (id === 'qrModal') generateStoreQR();
+    }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function generateStoreQR() {
+    function generateStoreQR() {
         const qrDiv = document.getElementById('storeQrCode');
-        const storeUrl = encodeURIComponent(window.location.href);
-        qrDiv.innerHTML = `<img src="https://qrserver.com{storeUrl}" alt="باركود المتجر" style="width:180px; height:180px; display:block;">`;
+        qrDiv.innerHTML = '';
+        setTimeout(() => {
+            new QRCode(qrDiv, {
+                text: window.location.href,
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff"
+            });
+        }, 100);
     }
+
 
 
     function copyStoreLink() {
