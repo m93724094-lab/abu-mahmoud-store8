@@ -814,11 +814,11 @@
         saveCart();
         closeModal('cartModal');
 
-        if (storeData.settings.whatsapp) {
-            window.open(`https://wa.me/${storeData.settings.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
-        } else {
-            alert("تم تسجيل طلبك بنجاح!");
-        }
+if (storeData.settings.whatsapp) {
+    const phone = storeData.settings.whatsapp.replace(/\D/g, '');
+    window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+}
+
         }
     
     function openAdminAuth() {
@@ -881,7 +881,7 @@
         resetProdForm();
         renderProducts();
         renderAdminProducts();
-        alert("تم حفظ القطعة بنجاح!");
+    
     }
 
     function editProduct(id) {
