@@ -442,9 +442,12 @@
         </div>
     </div>
 </div>
-
+<script>window.onerror = function(msg, url, line) { document.getElementById('loadingText').innerHTML = 'خطأ في السطر ' + line + ':<br>' + msg; };</script>
+    
 <script>
-    const DB_URL = "https://firebaseio.com";
+    const DB_URL = "https://abu-mahmoud-store-default-rtdb.firebaseio.com";
+
+    
     let storeData = {
         products: [],
         orders: [],
