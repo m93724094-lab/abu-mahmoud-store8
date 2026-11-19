@@ -693,7 +693,12 @@
         else cart.push({ id: prod.id, name: prod.name, retailPrice: parseFloat(prod.retailPrice), wholesalePrice: parseFloat(prod.wholesalePrice), minQty: parseInt(prod.minQty), qty });
         saveCart();
         if (qtyInput) qtyInput.value = 1;
-        alert(`تمت إضافة (${prod.name}) إلى السلة`);
+                const toast = document.createElement('div');
+        toast.textContent = `✅ تمت إضافة (${prod.name}) للسلة`;
+        toast.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#16a34a; color:#fff; padding:10px 20px; border-radius:25px; font-weight:bold; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.4);';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 1500);
+        
     }
 
     function saveCart() {
