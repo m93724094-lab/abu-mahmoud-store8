@@ -474,46 +474,30 @@
     let selectedCategory = 'all';
     let displayLimit = 20;
                     
-    async function compressImage(file, maxSize = 600, quality = 0.92) {
+        async function compressImage(file, maxWidth = 600, quality = 0.85) {
         if (!file) return null;
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    const innerMax = Math.round(maxSize * 0.86);
-                    let w = img.width, h = img.height;
-                    if (w > innerMax || h > innerMax) {
-                        if (w > h) { h = Math.round((h * innerMax) / w); w = innerMax; }
-                        else { w = Math.round((w * innerMax) / h); h = innerMax; }
+                    const canvas = document.createElement('canvas');
+                    let width = img.width, height = img.height;
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
                     }
-
-                    const finalCanvas = document.createElement('canvas');
-                    finalCanvas.width = maxSize;
-                    finalCanvas.height = maxSize;
-                    const ctx = finalCanvas.getContext('2d');
-
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, maxSize, maxSize);
-
-                    ctx.save();
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.16)';
-                    ctx.shadowBlur = 16;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 6;
-
-                    const offsetX = Math.round((maxSize - w) / 2);
-                    const offsetY = Math.round((maxSize - h) / 2);
-                    ctx.drawImage(img, offsetX, offsetY, w, h);
-                    ctx.restore();
-
-                    resolve(finalCanvas.toDataURL('image/jpeg', quality));
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         });
     }
+
     
     
 
