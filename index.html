@@ -816,7 +816,13 @@
 
 if (storeData.settings.whatsapp) {
     const phone = storeData.settings.whatsapp.replace(/\D/g, '');
-    window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobile) {
+            window.location.href = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+        } else {
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    
 }
 
         }
