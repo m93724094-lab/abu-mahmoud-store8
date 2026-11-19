@@ -477,7 +477,7 @@
     let pricingMode = 'auto';
     let selectedCategory = 'all';
     let displayLimit = 20;
-            async function compressImage(file, maxSize = 600, quality = 0.90) {
+                    async function compressImage(file, maxSize = 600, quality = 0.90) {
         if (!file) return null;
         let processedBlob = file;
         let aiSuccess = false;
@@ -569,17 +569,56 @@
                     ctx.restore();
 
                     resolve(finalCanvas.toDataURL('image/jpeg', quality));
+    async function compressImage(file, maxSize = 600, quality = 0.92) {
+        if (!file) return null;
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const innerMax = Math.round(maxSize * 0.86);
+    async function compressImage(file, maxSize = 600, quality = 0.92) {
+        if (!file) return null;
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const innerMax = Math.round(maxSize * 0.86);
+                    let w = img.width, h = img.height;
+                    if (w > innerMax || h > innerMax) {
+                        if (w > h) { h = Math.round((h * innerMax) / w); w = innerMax; }
+                        else { w = Math.round((w * innerMax) / h); h = innerMax; }
+                    }
+
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = maxSize;
+                    finalCanvas.height = maxSize;
+                    const ctx = finalCanvas.getContext('2d');
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, maxSize, maxSize);
+
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.16)';
+                    ctx.shadowBlur = 16;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 6;
+
+                    const offsetX = Math.round((maxSize - w) / 2);
+                    const offsetY = Math.round((maxSize - h) / 2);
+                    ctx.drawImage(img, offsetX, offsetY, w, h);
+                    ctx.restore();
+
+                    resolve(finalCanvas.toDataURL('image/jpeg', quality));
                 };
                 img.src = e.target.result;
             };
-            reader.readAsDataURL(processedBlob);
+            reader.readAsDataURL(file);
         });
-        }
-    
+    }
 
-
-
-    function compressBase64(base64Str, maxWidth = 450, quality = 0.68) {
+                    function compressBase64(base64Str, maxWidth = 450, quality = 0.72) {
         return new Promise((resolve) => {
             if (!base64Str || !base64Str.startsWith('data:image')) return resolve(base64Str);
             const img = new Image();
@@ -599,6 +638,7 @@
             img.src = base64Str;
         });
     }
+
         async function initCloudStore() {
             document.getElementById('loadingOverlay').style.display = 'none'; applyStoreUI(); renderCategories();
             
