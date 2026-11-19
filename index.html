@@ -815,7 +815,7 @@
         closeModal('cartModal');
 
         if (storeData.settings.whatsapp) {
-            window.open(`https://wa.me{storeData.settings.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+            window.open(`https://wa.me/${storeData.settings.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
         } else {
             alert("تم تسجيل طلبك بنجاح!");
         }
