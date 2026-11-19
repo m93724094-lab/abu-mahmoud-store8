@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر أبو محمود لقطع الدراجات النارية</title>
     <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
+        <script type="module">
+        import { removeBackground } from "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm";
+
+        window.aiRemoveBackground = removeBackground;
+        </script>
     
     <style>
         :root {
@@ -472,65 +477,65 @@
     let pricingMode = 'auto';
     let selectedCategory = 'all';
     let displayLimit = 20;
-    function compressImage(file, maxSize = 500, quality = 0.8) {
+        async function compressImage(file, maxSize = 600, quality = 0.90) {
+        if (!file) return null;
+        let processedBlob = file;
+
+        if (typeof window.aiRemoveBackground === 'function') {
+            try {
+                const saveBtn = document.querySelector('#productsTab button.primary-btn');
+                const oldText = saveBtn ? saveBtn.textContent : '';
+                if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ جاري عزل الخلفية وتبييضها باحترافية...'; }
+
+                processedBlob = await window.aiRemoveBackground(file, {
+                    output: { format: 'image/png', quality: 1 }
+                });
+
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = oldText; }
+            } catch (err) {
+                console.warn('AI BG removal fallback:', err);
+            }
+        }
+
         return new Promise((resolve) => {
-            if (!file) return resolve(null);
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    const innerMax = Math.round(maxSize * 0.85);
+                    const innerMax = Math.round(maxSize * 0.84);
                     let w = img.width, h = img.height;
                     if (w > innerMax || h > innerMax) {
                         if (w > h) { h = Math.round((h * innerMax) / w); w = innerMax; }
                         else { w = Math.round((w * innerMax) / h); h = innerMax; }
                     }
 
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = w;
-                    tempCanvas.height = h;
-                    const tCtx = tempCanvas.getContext('2d');
-                    tCtx.drawImage(img, 0, 0, w, h);
-
-                    const imgData = tCtx.getImageData(0, 0, w, h);
-                    const data = imgData.data;
-                    const corners = [0, (w - 1) * 4, ((h - 1) * w) * 4, ((h - 1) * w + (w - 1)) * 4];
-                    let bgR = 0, bgG = 0, bgB = 0;
-                    corners.forEach(idx => { bgR += data[idx]; bgG += data[idx + 1]; bgB += data[idx + 2]; });
-                    bgR /= 4; bgG /= 4; bgB /= 4;
-
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i], g = data[i + 1], b = data[i + 2];
-                        const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2);
-                        if (dist < 42) {
-                            data[i] = 255; data[i + 1] = 255; data[i + 2] = 255;
-                        } else if (dist < 68) {
-                            const blend = (dist - 42) / 26;
-                            data[i] = Math.round(255 * (1 - blend) + r * blend);
-                            data[i + 1] = Math.round(255 * (1 - blend) + g * blend);
-                            data[i + 2] = Math.round(255 * (1 - blend) + b * blend);
-                        }
-                    }
-                    tCtx.putImageData(imgData, 0, 0);
-
                     const finalCanvas = document.createElement('canvas');
                     finalCanvas.width = maxSize;
                     finalCanvas.height = maxSize;
-                    const fCtx = finalCanvas.getContext('2d');
-                    fCtx.fillStyle = '#ffffff';
-                    fCtx.fillRect(0, 0, maxSize, maxSize);
+                    const ctx = finalCanvas.getContext('2d');
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, maxSize, maxSize);
+
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.14)';
+                    ctx.shadowBlur = 18;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 8;
 
                     const offsetX = Math.round((maxSize - w) / 2);
                     const offsetY = Math.round((maxSize - h) / 2);
-                    fCtx.drawImage(tempCanvas, offsetX, offsetY, w, h);
+                    ctx.drawImage(img, offsetX, offsetY, w, h);
+                    ctx.restore();
 
                     resolve(finalCanvas.toDataURL('image/jpeg', quality));
                 };
                 img.src = e.target.result;
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(processedBlob);
         });
     }
+
 
 
     function compressBase64(base64Str, maxWidth = 450, quality = 0.68) {
