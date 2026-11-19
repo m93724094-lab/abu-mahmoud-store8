@@ -1092,11 +1092,12 @@
     function openModal(id) { document.getElementById(id).style.display = 'block'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    function generateStoreQR() {
+        function generateStoreQR() {
         const qrDiv = document.getElementById('storeQrCode');
-        qrDiv.innerHTML = '';
-        new QRCode(qrDiv, { text: window.location.href, width: 180, height: 180 });
+        const storeUrl = encodeURIComponent(window.location.href);
+        qrDiv.innerHTML = `<img src="https://qrserver.com{storeUrl}" alt="باركود المتجر" style="width:180px; height:180px; display:block;">`;
     }
+
 
     function copyStoreLink() {
         navigator.clipboard.writeText(window.location.href);
