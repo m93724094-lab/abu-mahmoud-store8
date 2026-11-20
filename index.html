@@ -997,8 +997,10 @@ const upRes = await fetch(upUrl, { method: "POST", body: fd });
 try {
     const fd = new FormData();
     fd.append("image", b64.split(',')[1]);
-    const r = await fetch("https://api.imgbb.com/1/upload?key=8a6af38fcd385eb1c8057e617d7e82c9"
- { method: "POST", body: fd });
+    const upUrl2 = "https://api.imgbb.com/1/upload?key=8a6af38fcd385eb1c8057e617d7e82c9"
+        ;
+const r = await fetch(upUrl2, { method: "POST", body: fd });
+    
     
     const d = await r.json();
     storeData.products[i].image = (d && d.success) ? d.data.url : b64;
