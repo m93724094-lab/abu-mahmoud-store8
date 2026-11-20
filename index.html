@@ -1163,7 +1163,13 @@ if (storeData.settings.whatsapp) {
         }
     }
 
-    initCloudStore();
+    document.getElementById('loadingOverlay').style.display = 'none';
+const gridEl = document.getElementById('productsGrid');
+if (gridEl && (!storeData.products || storeData.products.length === 0)) {
+    gridEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">⏳ جاري تحميل قطع الغيار...</div>';
+}
+initCloudStore();
+
 </script>
 </body>
 </html>
