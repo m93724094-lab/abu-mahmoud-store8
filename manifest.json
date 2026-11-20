@@ -1,0 +1,15 @@
+{
+  "name": "متجر أبو محمود لقطع الدراجات النارية",
+  "short_name": "متجر أبو محمود",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://flaticon.com",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
