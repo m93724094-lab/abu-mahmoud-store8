@@ -545,15 +545,23 @@
                 renderCategories();
                 renderProducts();
                 updateCartBadge();
-                generateStoreQR();
                 document.getElementById('loadingOverlay').style.display = 'none';
+setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
+
+                
             } catch (e) { console.error(e); }
         }
 
-        try {
-            const res = await fetch(`${DB_URL}/storeData.json`);
-            const data = await res.json();
-            if (data) {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4500);
+        const res = await fetch(`${DB_URL}/storeData.json`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        const data = await res.json();
+        if (data) {
+            const newStr = JSON.stringify(data);
+            const oldStr = localStorage.getItem('storeData_cache');
+            if (newStr !== oldStr) {
                 storeData.products = data.products ? (Array.isArray(data.products) ? data.products : Object.values(data.products)) : [];
                 storeData.orders = data.orders ? (Array.isArray(data.orders) ? data.orders : Object.values(data.orders)) : [];
                 if (data.categories) {
@@ -561,23 +569,26 @@
                 }
                 if (data.settings) {
                     storeData.settings = { ...storeData.settings, ...data.settings };
-                    if (data.settings.theme) storeData.settings.theme = { ...storeData.settings.theme, ...data.settings.theme };
+                    if (data.settings.theme) storeData.settings.theme = data.settings.theme;
                 }
-                try { localStorage.setItem('storeData_cache', JSON.stringify(storeData)); } catch (e) {}
-            } else {
-                await syncToCloud();
+                try { localStorage.setItem('storeData_cache', newStr); } catch(e){}
+                applyStoreUI();
+                renderCategories();
+                renderProducts();
+                updateCartBadge();
             }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            applyStoreUI();
-            renderCategories();
-            renderProducts();
-            updateCartBadge();
-            generateStoreQR();
-            document.getElementById('loadingOverlay').style.display = 'none';
+        } else {
+            await syncToCloud();
         }
+    } catch (err) {
+        console.error(err);
+    } finally {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
     }
+
+        }
+    
 
     async function syncToCloud() {
         try { localStorage.setItem('storeData_cache', JSON.stringify(storeData)); } catch (e) {}
