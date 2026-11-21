@@ -1488,8 +1488,12 @@ async function submitOrder() {
         total: totalStr
     };
 
-    storeData.orders.unshift(orderObj);
-    await syncToCloud();
+        try {
+        if (!storeData.orders) storeData.orders = [];
+        storeData.orders.unshift(orderObj);
+        await syncToCloud();
+    } catch (e) {}
+
 
     if (storeData.settings && storeData.settings.whatsapp) {
         const waPhone = storeData.settings.whatsapp.replace(/[^0-9]/g, '');
