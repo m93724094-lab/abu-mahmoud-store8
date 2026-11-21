@@ -1401,41 +1401,117 @@ initCloudStore();
                 <span>المطلوب من السيد :</span>
                 <span id="invCustName" style="flex:1; min-width:140px; border-bottom:1.5px dotted #09428c; text-align:center; color:#000; font-weight:800;"></span>
                 <span>المحترم المقيم في :</span>
-                <span id="invCustAddress" style="flex:1; min-width:120px; border-bottom:1.5px dotted #09428c; text-align:center; color:#000; font-weight:800;"></span>
+                <!-- مكتبة تحويل الفاتورة إلى صورة عالية الجودة -->
+<script src="https://cloudflare.com"></script>
+
+<!-- نافذة الفاتورة المطابقة لتصميم وكالة أبو محمود بالحرف -->
+<div id="invoiceModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; overflow:auto; padding:12px; flex-direction:column; align-items:center;">
+    
+    <!-- أزرار التحكم -->
+    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; width:100%; max-width:680px;">
+        <button type="button" onclick="downloadInvoiceImage()" style="background:#16a34a; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer; flex:1; min-width:150px;">📥 حفظ الفاتورة كصورة</button>
+        <button type="button" onclick="sendWhatsAppAfterInvoice()" style="background:#25d366; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer; flex:1; min-width:150px;">💬 إرسال الفاتورة للواتساب</button>
+        <button type="button" onclick="closeInvoiceModal()" style="background:#dc2626; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer;">✖ إغلاق</button>
+    </div>
+
+    <!-- حاوية التمرير الأفقي للهاتف للحفاظ على أبعاد الفاتورة الأصلية 100% -->
+    <div style="width:100%; max-width:680px; overflow-x:auto; border-radius:4px; box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+        
+        <!-- جسم الفاتورة المطابق للصورة الأصلية بمقاس ثابت 680px -->
+        <div id="invoiceCaptureArea" dir="rtl" style="width:680px; min-width:680px; background:#ffffff; color:#09428c; font-family:'Cairo', Tahoma, Arial, sans-serif; border:2px solid #09428c; position:relative; overflow:hidden; box-sizing:border-box;">
+            
+            <!-- الزخرفة الهندسية الزرقاء في الزاوية العلوية اليسرى -->
+            <svg viewBox="0 0 220 120" style="position:absolute; top:0; left:0; width:210px; height:115px; z-index:1; pointer-events:none;">
+                <path d="M0,0 L210,0 C160,15 130,65 0,95 Z" fill="#8cc6ec" opacity="0.55"/>
+                <path d="M0,0 L175,0 C130,15 105,55 0,78 Z" fill="#1b75bc" opacity="0.8"/>
+                <path d="M0,0 L140,0 C105,12 85,42 0,60 Z" fill="#09428c"/>
+            </svg>
+
+            <!-- الترويسة -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px 8px; position:relative; z-index:2;">
+                
+                <!-- يمين: الشعار الدائري -->
+                <div style="width:105px; height:105px; border:4px solid #09428c; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#ffffff; box-shadow:0 2px 6px rgba(9,66,140,0.18); flex-shrink:0;">
+                    <span style="font-size:44px; line-height:1;">🏍️</span>
+                    <span id="invSerial" style="background:#09428c; color:#ffffff; font-size:11px; padding:1px 14px; border-radius:10px; margin-top:4px; font-weight:800; letter-spacing:1px;">0001</span>
+                </div>
+
+                <!-- وسط: اسم الوكالة والنجوم -->
+                <div style="text-align:center; flex:1; padding:0 10px;">
+                    <h1 style="margin:0; font-size:34px; font-weight:900; color:#09428c; white-space:nowrap; line-height:1.15;">وكالة أبو محمود</h1>
+                    <div style="font-size:18px; font-weight:800; color:#09428c; margin-top:4px; white-space:nowrap;">لقطع الدراجات النارية</div>
+                    <div style="color:#09428c; font-size:14px; margin-top:4px; letter-spacing:6px;">★ ★ ★</div>
+                </div>
+
+                <!-- يسار: كبسولات الهاتف والعنوان -->
+                <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0; margin-top:14px;">
+                    <div style="background:#09428c; color:#ffffff; padding:5px 14px 5px 8px; border-radius:20px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:165px;">
+                        <span dir="ltr" style="letter-spacing:0.5px;">0954730783</span>
+                        <span style="background:#ffffff; color:#09428c; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">📞</span>
+                    </div>
+                    <div style="background:#09428c; color:#ffffff; padding:5px 14px 5px 8px; border-radius:20px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:165px;">
+                        <span>العنوان : العيون</span>
+                        <span style="background:#ffffff; color:#09428c; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">📍</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div style="padding:0 16px; position:relative;">
-            <div style="position:absolute; top:52%; left:50%; transform:translate(-50%, -50%); opacity:0.13; pointer-events:none; text-align:center; z-index:1; width:240px;">
-                <div style="width:110px; height:110px; border:5px solid #09428c; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:52px;">🏍️</div>
-                <div style="background:#09428c; color:#fff; font-weight:900; font-size:16px; padding:2px 10px; border-radius:6px; margin-top:6px;">وكالة أبو محمود</div>
-                <div style="color:#09428c; font-weight:800; font-size:13px; margin-top:2px;">لقطع الدراجات النارية</div>
-                <div style="color:#09428c; font-size:12px;">★ ★ ★</div>
+            <!-- الخط الأفقي الفاصل -->
+            <div style="height:2px; background:#09428c; margin:6px 22px 10px;"></div>
+
+            <!-- بيانات التاريخ والعميل -->
+            <div style="padding:2px 24px 12px; font-size:15px; font-weight:800; color:#09428c; line-height:2.1;">
+                <div style="display:flex; justify-content:flex-end; align-items:baseline;">
+                    <span>التاريخ :&nbsp;</span>
+                    <span id="invDate" style="border-bottom:2px dotted #09428c; min-width:170px; text-align:center; color:#000000; font-weight:700; display:inline-block; line-height:1.4;"></span>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
+                    <span style="white-space:nowrap;">المطلوب من السيد :</span>
+                    <span id="invCustName" style="flex:1.4; border-bottom:2px dotted #09428c; text-align:center; color:#000000; font-weight:800; line-height:1.4;"></span>
+                    <span style="white-space:nowrap;">المحترم المقيم في :</span>
+                    <span id="invCustAddress" style="flex:1; border-bottom:2px dotted #09428c; text-align:center; color:#000000; font-weight:800; line-height:1.4;"></span>
+                </div>
             </div>
 
-            <table style="width:100%; border-collapse:collapse; border:2px solid #09428c; position:relative; z-index:2; text-align:center; font-size:13px;">
-                <thead>
-                    <tr style="background:linear-gradient(180deg, #1b75bc 0%, #09428c 100%); color:#ffffff; font-weight:bold; height:36px;">
-                        <th style="border:1.5px solid #09428c; width:19%;">السعر الإجمالي</th>
-                        <th style="border:1.5px solid #09428c; width:39%;">نوع المنتج</th>
-                        <th style="border:1.5px solid #09428c; width:11%;">العدد</th>
-                        <th style="border:1.5px solid #09428c; width:14%;">السعر</th>
-                        <th style="border:1.5px solid #09428c; width:17%;">الملاحظات</th>
-                    </tr>
-                </thead>
-                <tbody id="invTableBody" style="color:#000; font-weight:700;"></tbody>
-            </table>
-        </div>
+            <!-- جدول الفاتورة مع العلامة المائية -->
+            <div style="padding:0 22px; position:relative;">
+                <!-- العلامة المائية في منتصف الجدول -->
+                <div style="position:absolute; top:54%; left:50%; transform:translate(-50%, -50%); opacity:0.14; pointer-events:none; text-align:center; z-index:1; width:280px;">
+                    <div style="width:125px; height:125px; border:6px solid #09428c; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:60px;">🏍️</div>
+                    <div style="background:#09428c; color:#ffffff; font-weight:900; font-size:20px; padding:3px 16px; border-radius:8px; margin-top:8px; display:inline-block;">وكالة أبو محمود</div>
+                    <div style="color:#09428c; font-weight:800; font-size:15px; margin-top:4px;">لقطع الدراجات النارية</div>
+                    <div style="color:#09428c; font-size:14px; letter-spacing:4px;">★ ★ ★</div>
+                </div>
 
-        <div style="padding:14px 20px 28px; display:flex; justify-content:space-between; align-items:center; font-size:16px; font-weight:900; color:#09428c; position:relative; z-index:2;">
-            <div style="display:flex; align-items:baseline; gap:8px; flex:1;">
+                <table style="width:100%; border-collapse:collapse; border:2px solid #09428c; position:relative; z-index:2; text-align:center; font-size:14px;">
+                    <thead>
+                        <tr style="background:linear-gradient(180deg, #1b75bc 0%, #09428c 100%); color:#ffffff; font-weight:800; height:40px;">
+                            <th style="border:1.5px solid #09428c; width:19%;">السعر الإجمالي</th>
+                            <th style="border:1.5px solid #09428c; width:41%;">نوع المنتج</th>
+                            <th style="border:1.5px solid #09428c; width:10%;">العدد</th>
+                            <th style="border:1.5px solid #09428c; width:13%;">السعر</th>
+                            <th style="border:1.5px solid #09428c; width:17%;">الملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invTableBody" style="color:#000000; font-weight:700;"></tbody>
+                </table>
+            </div>
+
+            <!-- سطر المجموع -->
+            <div style="padding:16px 24px 44px; display:flex; align-items:baseline; gap:8px; font-size:17px; font-weight:900; color:#09428c; position:relative; z-index:2;">
                 <span>المجموع :</span>
-                <span id="invTotalAmount" style="border-bottom:2px dotted #09428c; min-width:130px; text-align:center; color:#000; font-size:18px; padding:0 10px;"></span>
+                <span id="invTotalAmount" style="border-bottom:2px dotted #09428c; min-width:170px; text-align:center; color:#000000; font-size:19px; line-height:1.4; display:inline-block;"></span>
                 <span>فقط لا غير</span>
             </div>
-        </div>
 
-        <div style="height:22px; background:linear-gradient(90deg, #09428c 0%, #1c75bc 60%, #e6f0fa 100%); border-top:2px solid #09428c;"></div>
+            <!-- الزخرفة السفلية الزرقاء المتموجة -->
+            <svg viewBox="0 0 680 42" preserveAspectRatio="none" style="position:absolute; bottom:0; left:0; width:100%; height:40px; z-index:1; pointer-events:none;">
+                <path d="M0,42 L680,42 L680,28 C520,5 320,38 0,10 Z" fill="#8cc6ec" opacity="0.6"/>
+                <path d="M0,42 L680,42 L680,34 C480,15 260,40 0,18 Z" fill="#1b75bc" opacity="0.85"/>
+                <path d="M0,42 L520,42 C340,26 180,40 0,25 Z" fill="#09428c"/>
+            </svg>
+
+        </div>
     </div>
 </div>
 
@@ -1554,20 +1630,34 @@ function showGeneratedInvoice(custName, custAddress, items, totalStr, orderId) {
     document.getElementById('invoiceModal').style.display = 'flex';
 }
 
-function downloadInvoiceImage() {
+async function generateInvoiceCanvas() {
     const area = document.getElementById('invoiceCaptureArea');
-    html2canvas(area, { scale: 2, useCORS: true }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `فاتورة-وكالة-أبو-محمود-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    return await html2canvas(area, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: 650
     });
 }
 
-async function sendWhatsAppAfterInvoice() {
-    const area = document.getElementById('invoiceCaptureArea');
+async function downloadInvoiceImage() {
     try {
-        const canvas = await html2canvas(area, { scale: 2, useCORS: true });
+        const canvas = await generateInvoiceCanvas();
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `فاتورة-وكالة-أبو-محمود-${Date.now()}.png`;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (e) {
+        alert('تعذر حفظ الصورة تلقائياً، يمكنك أخذ لقطة شاشة للفاتورة.');
+    }
+}
+
+async function sendWhatsAppAfterInvoice() {
+    try {
+        const canvas = await generateInvoiceCanvas();
         canvas.toBlob(async (blob) => {
             const fileName = `فاتورة-وكالة-أبو-محمود-${Date.now()}.png`;
             const file = new File([blob], fileName, { type: 'image/png' });
@@ -1575,19 +1665,22 @@ async function sendWhatsAppAfterInvoice() {
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
-                    title: 'فاتورة وكالة أبو محمود',
-                    text: 'فاتورة طلب من وكالة أبو محمود لقطع الدراجات النارية'
+                    title: 'فاتورة وكالة أبو محمود'
                 });
             } else {
+                // حفظ الصورة وعرضها للمشاركة المباشرة
+                const dataUrl = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
                 link.download = fileName;
-                link.href = URL.createObjectURL(blob);
+                link.href = dataUrl;
+                document.body.appendChild(link);
                 link.click();
-                if (pendingWhatsAppUrl) window.open(pendingWhatsAppUrl, '_blank');
+                document.body.removeChild(link);
+                alert('تم حفظ صورة الفاتورة في هاتفك! افتح واتساب الآن وأرفقها من الاستوديو.');
             }
         }, 'image/png');
     } catch (err) {
-        if (pendingWhatsAppUrl) window.location.href = pendingWhatsAppUrl;
+        downloadInvoiceImage();
     }
 }
 
@@ -1595,7 +1688,3 @@ function closeInvoiceModal() {
     document.getElementById('invoiceModal').style.display = 'none';
     if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'flex';
 }
-    </script>
-        
-</body>
-</html>
