@@ -1603,42 +1603,28 @@ async function downloadInvoiceImage() {
 }
 
 async function sendWhatsAppAfterInvoice() {
-    try {
-        const canvas = await generateInvoiceCanvas();
-        canvas.toBlob(async (blob) => {
-            const fileName = `فاتورة-وكالة-أبو-محمود-${Date.now()}.png`;
-            const file = new File([blob], fileName, { type: 'image/png' });
-
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    title: 'فاتورة وكالة أبو محمود'
-                });
-            } else {
-                // حفظ الصورة وعرضها للمشاركة المباشرة
-                const dataUrl = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.download = fileName;
-                link.href = dataUrl;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                alert('تم حفظ صورة الفاتورة في هاتفك! افتح واتساب الآن وأرفقها من الاستوديو.');
-            }
-        }, 'image/png');
-    } catch (err) {
-                const invText = document.getElementById('invoiceModal')?.innerText || "طلب جديد من متجر أبو محمود";
-                const rawWa = (typeof storeData !== 'undefined' && storeData.settings)
-            ? (storeData.settings.whatsapp || storeData.settings.wa || '')
-            : '';
-        const phone = String(rawWa).replace(/\D/g, '');
-
-        window.location.href = `https://wa.me/${storePhone}?text=${encodeURIComponent(invText)}`;
-        
+async function sendWhatsAppAfterInvoice() {
+    const rawWa = (typeof storeData !== 'undefined' && storeData.settings)
+        ? (storeData.settings.whatsapp || storeData.settings.wa || '')
+        : '';
+    const phone = String(rawWa).replace(/\D/g, '');
+    if (!phone) {
+        alert('رقم الواتساب غير مضبوط في الإعدادات');
+        return;
     }
+
+    const cName = document.getElementById('invCustName')?.innerText || '';
+    const cAddr = document.getElementById('invCustAddress')?.innerText || '';
+    const cTotal = document.getElementById('invTotalAmount')?.innerText || '';
+    const cSerial = document.getElementById('invSerial')?.innerText || '';
+
+        const msg = "فاتورة جديدة - وكالة أبو محمود | الرقم: " + cSerial + " | الاسم: " + cName + " | العنوان: " + cAddr + " | الإجمالي: " + cTotal;
+    const waUrl = "https://wa.me" + phone + "?text=" + encodeURIComponent(msg);
+    window.open(waUrl, '_blank');
 }
 
 function closeInvoiceModal() {
+
     document.getElementById('invoiceModal').style.display = 'none';
     if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'flex';
 }
