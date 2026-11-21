@@ -1628,53 +1628,47 @@ function closeInvoiceModal() {
     document.getElementById('invoiceModal').style.display = 'none';
     if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'flex';
 }
-    async function submitOrder() {
-    const name = document.getElementById('custName')?.value.trim() || "";
-    const phone = document.getElementById('custPhone')?.value.trim() || "";
-    const address = document.getElementById('custAddress')?.value.trim() || "";
-    const payment = document.getElementById('paymentMethod')?.value || "الدفع عند الاستلام";
-    const txEl = document.getElementById('shamCashTxId'); // أو الاسم الكامل الموجود في السطر 1636
-const txId = txEl ? txEl.value.trim() : "";
+    function submitOrder() {
+  const name = document.getElementById('customerName')?.value.trim() || "";
+  const phone = document.getElementById('customerPhone')?.value.trim() || "";
+  const address = document.getElementById('customerAddress')?.value.trim() || "";
+  const payment = document.getElementById('paymentMethod')?.value || "الدفع عند الاستلام";
 
+  if (!name || !phone || !address) {
+    alert("يرجى تعبئة الاسم ورقم الهاتف والعنوان بالتفصيل");
+    return;
+  }
 
-    if (!name || !phone || !address) {
-        alert("يرجى تعبئة الاسم ورقم الهاتف والعنوان بالتفصيل.");
-        return;
-    }
+  let itemsText = "";
+  let total = 0;
 
-    let itemsText = "";
-    let total = 0;
+  if (typeof cart !== 'undefined' && cart.length > 0) {
+    cart.forEach(item => {
+      const price = parseFloat(item.price || item.unitPrice || 0);
+      const qty = parseInt(item.qty || item.quantity || 1);
+      const sub = price * qty;
+      total += sub;
+      itemsText += `- ${item.name} (${qty} × $${price.toFixed(2)}) = $${sub.toFixed(2)}\n`;
+    });
+  } else {
+    alert("السلة فارغة!");
+    return;
+  }
 
-    if (typeof cart !== 'undefined' && cart.length > 0) {
-        cart.forEach(item => {
-            const price = parseFloat(item.price || item.unitPrice || 0);
-            const qty = parseInt(item.qty || item.quantity || 1);
-            const sub = price * qty;
-            total += sub;
-            itemsText += `- ${item.name} (${qty} × $${price}) = $${sub.toFixed(2)}\n`;
-        });
-    } else {
-        alert("السلة فارغة!");
-        return;
-    }
+  let message = `*طلب جديد من متجر أبو محمود*\n`;
+  message += `*الاسم:* ${name}\n`;
+  message += `*الهاتف:* ${phone}\n`;
+  message += `*العنوان:* ${address}\n`;
+  message += `*طريقة الدفع:* ${payment}\n`;
+  message += `\n*الطلبات:*\n${itemsText}\n`;
+  message += `*الإجمالي المطلوب:* $${total.toFixed(2)}`;
 
-    let message = `*طلب جديد من متجر أبو محمود*\n\n`;
-    message += `*الاسم:* ${name}\n`;
-    message += `*الهاتف:* ${phone}\n`;
-    message += `*العنوان:* ${address}\n`;
-    message += `*طريقة الدفع:* ${payment}\n`;
-    if (txId) message += `*رقم عملية شام كاش:* ${txId}\n`;
-    message += `\n*الطلبات:*\n${itemsText}\n`;
-    message += `*الإجمالي المطلوب:* $${total.toFixed(2)}`;
+  const storePhone = "963952174376";
+  const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`;
+  
+  window.location.href = whatsappUrl;
+}
 
-    // ضع رقم واتساب متجرك هنا مع رمز الدولة 963 وبدون علامة +
-    const storePhone = (typeof storeData !== 'undefined' && storeData.settings && storeData.settings.whatsapp) ? storeData.settings.whatsapp.replace(/\D/g, '') : "963952174376";
-        
-
-    const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`;
-
-    window.location.href = whatsappUrl;
-    }
 </script>
 </body>
 </html>
