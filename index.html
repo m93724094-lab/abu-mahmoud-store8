@@ -1319,7 +1319,9 @@ const r = await fetch(upUrl2, { method: "POST", body: fd });
 
     function openModal(id) {
         document.getElementById(id).style.display = 'block';
-        if (id === 'qrModal') generateStoreQR();
+        if (id === 'qrModal') generateStoreQR(); const floatBtn = document.querySelector('.floating-cart-btn'); if (floatBtn) floatBtn.style.display = 'none';
+            const floatBtn = document.querySelector('.floating-cart-btn'); if (floatBtn) floatBtn.style.display = 'none';
+        
     }
     function toggleAdminMenu(event) {
   event.stopPropagation();
@@ -1333,7 +1335,8 @@ window.addEventListener("click", function() {
   }
 });
     
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; const floatBtn = document.querySelector('.floating-cart-btn'); if (floatBtn) floatBtn.style.display = 'flex';
+                            }
 
     function generateStoreQR() {
         const qrDiv = document.getElementById('storeQrCode');
