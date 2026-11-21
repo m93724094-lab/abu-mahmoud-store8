@@ -1002,12 +1002,11 @@ function updateCartBadge() {
             let compressedImg = null;
     if (file) {
         const base64 = await compressImage(file);
-        try {
-            const fd = new FormData();
-            fd.append("image", base64.split(',')[1]);
-            const upUrl = "https://api.imgbb.com/1/upload?key=8a6af38fcd385eb1c8057e617d7e82c9"
-                ;
-            
+        try {            const fd = new FormData();
+            fd.append("image", base64.split(','));
+            const upUrl = "https://imgbb.com" + (storeData.settings?.imgbbKey || "e2c6403766810c218d50f68b9b8e1102");
+
+
             
 const upRes = await fetch(upUrl, { method: "POST", body: fd });
             
