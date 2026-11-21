@@ -1634,7 +1634,12 @@ async function sendWhatsAppAfterInvoice() {
             }
         }, 'image/png');
     } catch (err) {
-        downloadInvoiceImage();
+                const invText = document.getElementById('invoiceModal')?.innerText || "طلب جديد من متجر أبو محمود";
+        const storePhone = (typeof storeSettings !== 'undefined' && storeSettings.whatsapp) 
+            ? storeSettings.whatsapp.replace(/\D/g, '') 
+            : localStorage.getItem('storeWhatsapp') || "963900000000";
+        window.location.href = `https://wa.me/${storePhone}?text=${encodeURIComponent(invText)}`;
+        
     }
 }
 
