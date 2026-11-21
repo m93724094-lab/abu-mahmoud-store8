@@ -1633,7 +1633,9 @@ function closeInvoiceModal() {
     const phone = document.getElementById('custPhone')?.value.trim() || "";
     const address = document.getElementById('custAddress')?.value.trim() || "";
     const payment = document.getElementById('paymentMethod')?.value || "الدفع عند الاستلام";
-    const txId = document.getElementById('shamTxId')?.value.trim() || "";
+    const txEl = document.getElementById('shamCashTxId'); // أو الاسم الكامل الموجود في السطر 1636
+const txId = txEl ? txEl.value.trim() : "";
+
 
     if (!name || !phone || !address) {
         alert("يرجى تعبئة الاسم ورقم الهاتف والعنوان بالتفصيل.");
