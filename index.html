@@ -1641,7 +1641,8 @@ async function sendWhatsAppAfterInvoice() {
 function closeInvoiceModal() {
     document.getElementById('invoiceModal').style.display = 'none';
     if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'flex';
-}async function submitOrder() {
+}
+    async function submitOrder() {
     const name = document.getElementById('custName')?.value.trim() || "";
     const phone = document.getElementById('custPhone')?.value.trim() || "";
     const address = document.getElementById('custAddress')?.value.trim() || "";
@@ -1687,4 +1688,7 @@ function closeInvoiceModal() {
 
     window.location.href = whatsappUrl;
     }
-    
+</script>
+</body>
+</html>
+
