@@ -1531,11 +1531,12 @@ window.submitOrder = async function() {
     } catch (e) {}
 
     if (storeData.settings && storeData.settings.whatsapp) {
-                const waPhone = "963952174376";
+                        const waPhone = "963952174376";
+        const msg = `*طلب جديد - وكالة أبو محمود*\n*الاسم:* ${name}\n*العنوان:* ${address}`;
         const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
         window.open(waUrl, '_blank');
-
     }
+    
 
     showGeneratedInvoice(name, address, invoiceItems, totalStr, orderObj.id);
 
