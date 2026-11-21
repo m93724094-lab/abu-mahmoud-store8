@@ -1685,9 +1685,8 @@ function closeInvoiceModal() {
     message += `*الإجمالي المطلوب:* $${total.toFixed(2)}`;
 
     // ضع رقم واتساب متجرك هنا مع رمز الدولة 963 وبدون علامة +
-    const storePhone = (typeof storeSettings !== 'undefined' && storeSettings.whatsapp) 
-    ? storeSettings.whatsapp.replace(/\D/g, '') 
-    : localStorage.getItem('storeWhatsapp') || "963900000000";
+    const storePhone = (typeof storeData !== 'undefined' && storeData.settings && storeData.settings.whatsapp) ? storeData.settings.whatsapp.replace(/\D/g, '') : "963952174376";
+        
 
     const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`;
 
