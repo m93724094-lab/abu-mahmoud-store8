@@ -1530,12 +1530,6 @@ window.submitOrder = async function() {
         if (typeof syncToCloud === 'function') await syncToCloud();
     } catch (e) {}
 
-    if (storeData.settings && storeData.settings.whatsapp) {
-                        const waPhone = "963952174376";
-        const msg = `*طلب جديد - وكالة أبو محمود*\n*الاسم:* ${name}\n*العنوان:* ${address}`;
-        const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
-        window.open(waUrl, '_blank');
-    }
     
 
     showGeneratedInvoice(name, address, invoiceItems, totalStr, orderObj.id);
@@ -1634,9 +1628,11 @@ async function sendWhatsAppAfterInvoice() {
         }, 'image/png');
     } catch (err) {
                 const invText = document.getElementById('invoiceModal')?.innerText || "طلب جديد من متجر أبو محمود";
-        const storePhone = (typeof storeSettings !== 'undefined' && storeSettings.whatsapp) 
-            ? storeSettings.whatsapp.replace(/\D/g, '') 
-            : localStorage.getItem('storeWhatsapp') || "963900000000";
+                const rawWa = (typeof storeData !== 'undefined' && storeData.settings)
+            ? (storeData.settings.whatsapp || storeData.settings.wa || '')
+            : '';
+        const phone = String(rawWa).replace(/\D/g, '');
+
         window.location.href = `https://wa.me/${storePhone}?text=${encodeURIComponent(invText)}`;
         
     }
