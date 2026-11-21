@@ -15,6 +15,7 @@
     --text-main: #ffffff;
     --text-muted: #9ca3af;
     --border-color: rgba(59, 130, 246, 0.35);
+        }
 .floating-cart-btn {
   position: fixed;
   bottom: 20px;
@@ -1640,4 +1641,50 @@ async function sendWhatsAppAfterInvoice() {
 function closeInvoiceModal() {
     document.getElementById('invoiceModal').style.display = 'none';
     if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'flex';
-}
+}async function submitOrder() {
+    const name = document.getElementById('custName')?.value.trim() || "";
+    const phone = document.getElementById('custPhone')?.value.trim() || "";
+    const address = document.getElementById('custAddress')?.value.trim() || "";
+    const payment = document.getElementById('paymentMethod')?.value || "الدفع عند الاستلام";
+    const txId = document.getElementById('shamTxId')?.value.trim() || "";
+
+    if (!name || !phone || !address) {
+        alert("يرجى تعبئة الاسم ورقم الهاتف والعنوان بالتفصيل.");
+        return;
+    }
+
+    let itemsText = "";
+    let total = 0;
+
+    if (typeof cart !== 'undefined' && cart.length > 0) {
+        cart.forEach(item => {
+            const price = parseFloat(item.price || item.unitPrice || 0);
+            const qty = parseInt(item.qty || item.quantity || 1);
+            const sub = price * qty;
+            total += sub;
+            itemsText += `- ${item.name} (${qty} × $${price}) = $${sub.toFixed(2)}\n`;
+        });
+    } else {
+        alert("السلة فارغة!");
+        return;
+    }
+
+    let message = `*طلب جديد من متجر أبو محمود*\n\n`;
+    message += `*الاسم:* ${name}\n`;
+    message += `*الهاتف:* ${phone}\n`;
+    message += `*العنوان:* ${address}\n`;
+    message += `*طريقة الدفع:* ${payment}\n`;
+    if (txId) message += `*رقم عملية شام كاش:* ${txId}\n`;
+    message += `\n*الطلبات:*\n${itemsText}\n`;
+    message += `*الإجمالي المطلوب:* $${total.toFixed(2)}`;
+
+    // ضع رقم واتساب متجرك هنا مع رمز الدولة 963 وبدون علامة +
+    const storePhone = (typeof storeSettings !== 'undefined' && storeSettings.whatsapp) 
+    ? storeSettings.whatsapp.replace(/\D/g, '') 
+    : localStorage.getItem('storeWhatsapp') || "963900000000";
+
+    const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`;
+
+    window.location.href = whatsappUrl;
+    }
+    
