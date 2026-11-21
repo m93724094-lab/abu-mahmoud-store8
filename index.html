@@ -224,9 +224,12 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
             .admin-menu-wrap {
-  position: relative;
-  display: inline-block;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
 }
+
 
 .dots-menu {
   background: var(--bg-card);
@@ -686,15 +689,21 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
     }
 
     function renderCategories() {
-        const bar = document.getElementById('categoriesBar');
-        const select = document.getElementById('prodCategory');
-        const cats = storeData.categories || [];
-        
-        bar.innerHTML = `<button class="cat-btn ${selectedCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all')">الكل</button>` +
-            cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
-            
-        select.innerHTML = `<option value="">بدون قسم</option>` + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-    }
+  const bar = document.getElementById('categoriesBar');
+  const select = document.getElementById('prodCat');
+  const cats = storeData.categories || [];
+
+  if (cats.length > 0 && (!selectedCategory || selectedCategory === 'all')) {
+    selectedCategory = cats[0];
+  }
+
+  bar.innerHTML = cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
+
+  if (select) {
+    select.innerHTML = `<option value="">بدون قسم</option>` + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+}
+
 
     function selectCategory(cat) {
         selectedCategory = cat;
