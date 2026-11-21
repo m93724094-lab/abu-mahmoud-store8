@@ -155,7 +155,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
         .stock-available { background-color: #16a34a; }
-        .stock-abundant { background-color: #2563eb; }
+        .stock-abundant { background-color:#dc2626 ; }
         .stock-limited { background-color: #d97706; }
         .cat-tag {
             display: inline-block;
@@ -485,13 +485,20 @@
             </div>
             <div class="form-group">
                 <label>القسم</label>
-                <select id="prodCategory"></select>
+                <select id="prodCategory">
+    <option value="محرك">محرك</option>
+    <option value="اكسسوارات">اكسسوارات</option>
+    <option value="كهرباء">كهرباء</option>
+    <option value="هيكل">هيكل</option>
+</select>
+
             </div>
             <div class="form-group">
                 <label>حالة التوفر</label>
                 <select id="prodStock">
                     <option value="available">🟢 متوفر</option>
-                    <option value="abundant">🔵 متوفر بكثرة</option>
+                    <option value="abundant">🔴 نفذت الكمية</option>
+
                     <option value="limited">🟠 كمية محدودة</option>
                 </select>
             </div>
@@ -788,8 +795,9 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
         const filtered = storeData.products.filter(p => {
             
             const matchSearch = !query || (p.name && String(p.name).toLowerCase().includes(query));
-const matchCat = selectedCategory === 'all' || (p.category && String(p.category).trim() === String(selectedCategory).trim());
- 
+
+ const matchCat = selectedCategory === 'all' || !p.category || (String(p.category).trim() === String(selectedCategory).trim());
+            
             return matchSearch && matchCat;
         });
 
@@ -801,7 +809,7 @@ const matchCat = selectedCategory === 'all' || (p.category && String(p.category)
         const itemsToShow = query ? filtered : filtered.slice(0, displayLimit);
         const stockLabels = {
             available: { text: 'متوفر', cls: 'stock-available' },
-            abundant: { text: 'متوفر بكثرة', cls: 'stock-abundant' },
+            abundant: { text: 'نفذت الكمية', cls: 'stock-abundant' },
             limited: { text: 'كمية محدودة', cls: 'stock-limited' }
         };
 
