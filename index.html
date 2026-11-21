@@ -168,8 +168,9 @@
         }
                 .product-img {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            height: 100px;object-fit: contain;
+                    
+
             object-position: center;
             background-color: #ffffff;
             padding: 0;
@@ -807,10 +808,10 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
     const inCartItem = cart.find(c => String(c.id) === String(p.id));
     const currentQty = inCartItem ? inCartItem.qty : 0;
 
-    let priceHtml = pricingMode === 'auto'
-      ? `<div class="price-row"><span>المفرق:</span><strong>$${p.price}</strong></div>
-         <div class="price-row"><span>الجملة (${p.minQty || storeData.settings.defaultMinQty}+):</span><strong>$${p.wholesalePrice || p.price}</strong></div>`
-      : `<div class="price-row"><span>السعر:</span><strong>$${pricingMode === 'wholesale' ? (p.wholesalePrice || p.price) : p.price}</strong></div>`;
+        let priceHtml = pricingMode === 'auto'
+        ? `<div class="price-row"><span>المفرق:</span><strong>$${p.retailPrice || p.price || 0}</strong></div>
+           <div class="price-row"><span>الجملة (${p.minQty || storeData.settings?.defaultMinQty || 5}+):</span><strong>$${p.wholesalePrice || 0}</strong></div>`
+        : `<div class="price-row"><span>السعر:</span><strong>$${pricingMode === 'wholesale' ? (p.wholesalePrice || 0) : (p.retailPrice || p.price || 0)}</strong></div>`;
 
     return `
       <div class="product-card ${currentQty > 0 ? 'in-cart' : ''}" onclick="handleCardClick('${p.id}')" style="cursor:pointer;">
@@ -909,7 +910,8 @@ function updateCartBadge() {
         let total = 0;
         list.innerHTML = cart.map((item, idx) => {
             const isWholesale = pricingMode === 'auto' && item.qty >= item.minQty;
-            const unitPrice = isWholesale ? item.wholesalePrice : item.retailPrice;
+                    const unitPrice = isWholesale ? (item.wholesalePrice || 0) : (item.retailPrice || item.price || 0);
+
             const sub = unitPrice * item.qty;
             total += sub;
             return `
