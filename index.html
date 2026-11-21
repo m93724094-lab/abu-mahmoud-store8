@@ -1444,13 +1444,19 @@ initCloudStore();
     
     let pendingWhatsAppUrl = "";
 
-async function submitOrder() {
-    if (cart.length === 0) return alert('السلة فارغة!');
-    const name = document.getElementById('custName').value.trim();
-    const phone = document.getElementById('custPhone').value.trim();
-    const address = document.getElementById('custAddress').value.trim();
-    const method = document.getElementById('payMethod').value;
-    const txId = document.getElementById('shamTxId').value.trim();
+window.submitOrder = async function() {
+    if (!cart || cart.length === 0) return alert('السلة فارغة!');
+    const nameEl = document.getElementById('custName') || document.querySelector('#cartModal input[type="text"]');
+    const phoneEl = document.getElementById('custPhone') || document.querySelector('#cartModal input[type="tel"]');
+    const addrEl = document.getElementById('custAddress') || document.querySelectorAll('#cartModal input[type="text"]')[1];
+    const methodEl = document.getElementById('payMethod');
+    const txEl = document.getElementById('shamTxId');
+
+    const name = (nameEl ? nameEl.value : '').trim();
+    const phone = (phoneEl ? phoneEl.value : '').trim();
+    const address = (addrEl ? addrEl.value : '').trim();
+    const method = methodEl ? methodEl.value : 'cod';
+    const txId = (txEl ? txEl.value : '').trim();
 
     if (!name || !phone || !address) return alert('يرجى تعبئة الاسم ورقم الهاتف والعنوان!');
     if (method === 'sham' && !txId) return alert('يرجى إدخال رقم عملية الدفع في شام كاش!');
@@ -1460,8 +1466,8 @@ async function submitOrder() {
     const invoiceItems = [];
 
     cart.forEach(item => {
-        const minQty = item.minQty || storeData.settings?.defaultMinQty || 5;
-        const isWholesale = pricingMode === 'wholesale' || (pricingMode === 'auto' && item.qty >= minQty);
+        const minQty = item.minQty || (storeData.settings && storeData.settings.defaultMinQty) || 5;
+        const isWholesale = (typeof pricingMode !== 'undefined') && (pricingMode === 'wholesale' || (pricingMode === 'auto' && item.qty >= minQty));
         const unitPrice = Number(isWholesale ? (item.wholesalePrice || 0) : (item.retailPrice || item.price || 0));
         const lineTotal = unitPrice * item.qty;
         calculatedTotal += lineTotal;
@@ -1488,12 +1494,11 @@ async function submitOrder() {
         total: totalStr
     };
 
-        try {
+    try {
         if (!storeData.orders) storeData.orders = [];
         storeData.orders.unshift(orderObj);
-        await syncToCloud();
+        if (typeof syncToCloud === 'function') await syncToCloud();
     } catch (e) {}
-
 
     if (storeData.settings && storeData.settings.whatsapp) {
         const waPhone = storeData.settings.whatsapp.replace(/[^0-9]/g, '');
@@ -1507,9 +1512,10 @@ async function submitOrder() {
     showGeneratedInvoice(name, address, invoiceItems, totalStr, orderObj.id);
 
     cart = [];
-    saveCart();
-    closeModal('cartModal');
-}
+    if (typeof saveCart === 'function') saveCart();
+    if (typeof closeModal === 'function') closeModal('cartModal');
+};
+
 
 function showGeneratedInvoice(custName, custAddress, items, totalStr, orderId) {
     const today = new Date();
