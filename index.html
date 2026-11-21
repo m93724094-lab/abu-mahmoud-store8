@@ -1056,26 +1056,39 @@ const upRes = await fetch(upUrl, { method: "POST", body: fd });
         
 
 
-        if (id) {
-            const idx = storeData.products.findIndex(p => String(p.id) === String(id));
-            if (idx > -1) {
-                storeData.products[idx] = {
-                    ...storeData.products[idx],
-                    name, category, stock, retailPrice, wholesalePrice, minQty, desc,
-                    image: compressedImg || storeData.products[idx].image
-                };
-            }
-        } else {
-            storeData.products.unshift({
-                id: Date.now(), name, category, stock, retailPrice, wholesalePrice, minQty, desc,
-                image: compressedImg || ""
-            });
-        }
+            const productObj = {
+        name,
+        category,
+        stock,
+        retailPrice,
+        price: retailPrice,
+        wholesalePrice,
+        minQty,
+        desc
+    };
 
-        await syncToCloud();
-        resetProdForm();
-        renderProducts();
-        renderAdminProducts();
+    if (id) {
+        const idx = storeData.products.findIndex(x => String(x.id) === String(id));
+        if (idx > -1) {
+            storeData.products[idx] = {
+                ...storeData.products[idx],
+                ...productObj,
+                image: compressedImg || storeData.products[idx].image || ""
+            };
+        }
+    } else {
+        storeData.products.unshift({
+            id: Date.now(),
+            ...productObj,
+            image: compressedImg || ""
+        });
+    }
+
+    resetProdForm();
+    renderProducts();
+    renderAdminProducts();
+    await syncToCloud();
+
     
     }
 
