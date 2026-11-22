@@ -435,8 +435,16 @@
             </div>
         </div>
 
-        <button type="button" class="primary-btn" style="width:100%;justify-content:center;padding:12px" onclick="(async function(){try{var n=document.getElementById('custName').value.trim(),p=document.getElementById('custPhone').value.trim(),a=document.getElementById('custAddress').value.trim(),t=document.getElementById('cartTotal').innerText;if(!n||!p||!a)return alert('أكمل الاسم والهاتف والعنوان');var d=new Date(),o={id:Date.now(),date:d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(),customerName:n,customerPhone:p,customerAddress:a,paymentMethod:'عند الاستلام',items:[],total:t.replace(/[^0-9.]/g,'')};var u='https://firebaseio.com c=await(await fetch(u)).json()||{};c.orders=Array.isArray(c.orders)?c.orders:[];c.orders.unshift(o);await fetch(u,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});window.location.href='https://wa.me('*طلب جديد - متجر أبو محمود*\nالاسم: '+n+'\nالهاتف: '+p+'\nالعنوان: '+a+'\nالإجمالي: '+t)}catch(e){alert(e.message)}})()">📲 إرسال الطلب عبر واتساب</button>
-        
+        <!-- زر تحميل الفاتورة PDF -->
+<button type="button" onclick="downloadInvoiceImage()" style="width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 10px; cursor: pointer;">
+  📄 تحميل الفاتورة (PDF)
+</button>
+
+<!-- زر إرسال الطلب عبر واتساب -->
+<button type="button" onclick="sendWhatsAppOnly()" style="width: 100%; padding: 14px; background-color: #0056b3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+  📲 إرسال الطلب عبر واتساب
+</button>
+
     </div>
     
 </div>
@@ -1739,31 +1747,24 @@ async function downloadInvoiceImage() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'فاتورة-متجر-أبو-محمود.pdf'; a.click();
 }
 
-async function sendWhatsAppAfterInvoice() {
-  try {
-    // 1. استدعاء دالتك التي تحول الفاتورة إلى Canvas أو Blob
-    // ملاحظة: يفضل مشاركة صورة PNG لأن متصفحات الهاتف تدعمها في واتساب أفضل من PDF
-    const blob = await makeInvoicePdfBlob(); 
-    const file = new File([blob], "invoice.pdf", { type: "application/pdf" });
+function sendWhatsAppOnly() {
+  const phone = "963952174376";
+  
+  // جلب بيانات الزبون من الحقول (تأكد من مطابقة الـ IDs إن كانت مختلفة)
+  const inputs = document.querySelectorAll("input, select");
+  const name = inputs[0]?.value || "غير محدد";
+  const custPhone = inputs[1]?.value || "غير محدد";
+  const address = inputs[2]?.value || "غير محدد";
 
-    // 2. التحقق من دعم الهاتف لمشاركة الملفات
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: "فاتورة طلب - متجر أبو محمود",
-        text: "مرحباً، مرفق فاتورة الطلب."
-      });
-      return; // تم الإرسال بنجاح
-    }
-  } catch (err) {
-    console.log("تعذرت المشاركة المباشرة:", err);
-  }
+  const msg = encodeURIComponent(
+    `طلب جديد من متجر أبو محمود:\n` +
+    `الاسم: ${name}\n` +
+    `الهاتف: ${custPhone}\n` +
+    `العنوان: ${address}`
+  );
 
-  // 3. خطة بديلة إذا رفض المتصفح مشاركة الملف: تحميل الفاتورة + فتح واتساب
-  await downloadInvoiceImage();
-  const phone = "963952174376"; // ضع رقم هاتف المتجر هنا
-  const msg = encodeURIComponent("مرحباً، قمت بتحميل الفاتورة وسأقوم بإرفاقها الآن.");
-  window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+  // فتح واتساب مباشرة بدون انتظار الـ PDF
+  window.location.href = `https://wa.me/${phone}?text=${msg}`;
 }
 
 
