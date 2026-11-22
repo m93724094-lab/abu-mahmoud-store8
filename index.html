@@ -435,7 +435,7 @@
             </div>
         </div>
 
-        <button type="button" class="primary-btn" style="width:100%;justify-content:center;padding:12px" onclick="submitOrder()">📲 إرسال الطلب عبر واتساب</button>
+        <button type="button" class="primary-btn" style="width:100%;justify-content:center;padding:12px" onclick="(async function(){try{var n=document.getElementById('custName').value.trim(),p=document.getElementById('custPhone').value.trim(),a=document.getElementById('custAddress').value.trim(),t=document.getElementById('cartTotal').innerText;if(!n||!p||!a)return alert('أكمل الاسم والهاتف والعنوان');var d=new Date(),o={id:Date.now(),date:d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(),customerName:n,customerPhone:p,customerAddress:a,paymentMethod:'عند الاستلام',items:[],total:t.replace(/[^0-9.]/g,'')};var u='https://firebaseio.com c=await(await fetch(u)).json()||{};c.orders=Array.isArray(c.orders)?c.orders:[];c.orders.unshift(o);await fetch(u,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});window.location.href='https://wa.me('*طلب جديد - متجر أبو محمود*\nالاسم: '+n+'\nالهاتف: '+p+'\nالعنوان: '+a+'\nالإجمالي: '+t)}catch(e){alert(e.message)}})()">📲 إرسال الطلب عبر واتساب</button>
         
     </div>
     
