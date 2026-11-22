@@ -1627,53 +1627,39 @@ async function downloadInvoiceImage() {
 
 async function sendWhatsAppAfterInvoice() {
   try {
-    if (!window.html2pdf) {
+    if (!window.jspdf) {
       await new Promise((res, rej) => {
         const s = document.createElement('script');
-        s.src = 'https://cloudflare.com';
+        s.src = 'https://unpkg.com';
         s.onload = res; s.onerror = rej;
         document.head.appendChild(s);
       });
     }
-    const cust = (document.getElementById('invCustName')?.innerText || '').trim();
-    const addr = (document.getElementById('invCustAddress')?.innerText || '').trim();
-    const dt = (document.getElementById('invDate')?.innerText || '').trim();
-    const tot = (document.getElementById('invTotal')?.innerText || '').trim();
-    const rows = document.getElementById('invTableBody')?.innerHTML || '';
+    const area = document.getElementById('invoicePrintableArea') || document.querySelector('#invoiceModal div[style*="background"]');
+    const canvas = await html2canvas(area, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'width:540px;background:#fff;color:#0d3b75;border:2px solid #1557a8;font-family:Cairo,sans-serif;direction:rtl';
-    wrap.innerHTML =
-      '<div style="height:14px;background:linear-gradient(135deg,#1557a8,#0a2e5c);border-bottom-left-radius:60% 100%"></div>' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px">' +
-      '<div><div style="background:#0d3b75;color:#fff;padding:3px 10px;border-radius:15px;font-size:12px;margin-bottom:4px">📞 0954730783</div>' +
-      '<div style="background:#0d3b75;color:#fff;padding:3px 10px;border-radius:15px;font-size:12px">📍 العنوان : العيون</div></div>' +
-      '<div style="text-align:center"><h2 style="margin:0;font-size:22px;font-weight:900">متجر أبو محمود</h2><b style="color:#1557a8;font-size:13px">لقطع الدراجات النارية</b><br><small>— ★ ★ ★ —</small></div>' +
-      '<div style="font-size:36px">🏍️</div></div>' +
-      '<div style="padding:4px 14px 8px;font-size:13px;font-weight:700">التاريخ: ' + dt + '<br>المطلوب من السيد: ' + cust + ' المحترم | المقيم في: ' + addr + '</div>' +
-      '<div style="padding:0 10px"><table style="width:100%;border-collapse:collapse;border:2px solid #1557a8;text-align:center;font-size:12px">' +
-      '<thead style="background:#3b82f6;color:#fff"><tr><th style="padding:5px;border:1px solid #1557a8">الإجمالي</th><th style="padding:5px;border:1px solid #1557a8">نوع المنتج</th><th style="padding:5px;border:1px solid #1557a8">العدد</th><th style="padding:5px;border:1px solid #1557a8">السعر</th><th style="padding:5px;border:1px solid #1557a8">ملاحظات</th></tr></thead>' +
-      '<tbody style="color:#000">' + rows + '</tbody></table></div>' +
-      '<div style="padding:10px 14px;font-weight:900;font-size:14px">المجموع : ' + tot + ' فقط لا غير</div>' +
-      '<div style="height:14px;background:linear-gradient(135deg,#0a2e5c,#2563eb);border-top-right-radius:65% 100%"></div>';
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = (canvas.height * pdfW) / canvas.width;
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH);
 
-    const fileName = 'فاتورة-متجر-أبو-محمود-' + (cust || 'زبون') + '.pdf';
-    const opt = { margin: 0, filename: fileName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' } };
-    const pdfBlob = await html2pdf().set(opt).from(wrap).outputPdf('blob');
+    const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+    const fileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
+    const pdfBlob = pdf.output('blob');
     const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
     if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
       await navigator.share({ files: [pdfFile], title: 'فاتورة متجر أبو محمود' });
     } else {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(pdfBlob);
-      a.download = fileName;
-      a.click();
+      pdf.save(fileName);
     }
   } catch (e) {
-    alert('حدث خطأ أثناء تجهيز ملف PDF');
+    alert('خطأ: ' + e.message);
   }
 }
+
     
 
 
