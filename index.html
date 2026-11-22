@@ -1586,23 +1586,45 @@ async function generateInvoiceCanvas() {
         windowWidth: 650
     });
 }
-
 async function downloadInvoiceImage() {
     try {
-        const canvas = await generateInvoiceCanvas();
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = `فاتورة-وكالة-أبو-محمود-${Date.now()}.png`;
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        if (!window.html2pdf) {
+            await new Promise((res, rej) => {
+                const s = document.createElement('script');
+                s.src = 'https://cloudflare.com';
+                s.onload = res; s.onerror = rej;
+                document.head.appendChild(s);
+            });
+        }
+        const area = document.getElementById('invoicePrintableArea') || document.getElementById('invoiceModal').querySelector('div[style*="background"]');
+        const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+        const fileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
+        const opt = {
+            margin: 0,
+            filename: fileName,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+        };
+        const pdfBlob = await html2pdf().set(opt).from(area).outputPdf('blob');
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({ files: [pdfFile], title: 'فاتورة متجر أبو محمود' });
+        } else {
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     } catch (e) {
-        alert('تعذر حفظ الصورة تلقائياً، يمكنك أخذ لقطة شاشة للفاتورة.');
+        alert('تعذر إنشاء ملف PDF، تأكد من اتصال الإنترنت.');
     }
 }
+    
 
-async function sendWhatsAppAfterInvoice() {
 async function sendWhatsAppAfterInvoice() {
     const rawWa = (typeof storeData !== 'undefined' && storeData.settings)
         ? (storeData.settings.whatsapp || storeData.settings.wa || '')
