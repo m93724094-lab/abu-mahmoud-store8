@@ -1740,11 +1740,32 @@ async function downloadInvoiceImage() {
 }
 
 async function sendWhatsAppAfterInvoice() {
-  const blob = await makeInvoicePdfBlob();
-  const file = new File([blob], 'فاتورة-متجر-أبو-محمود.pdf', { type: 'application/pdf' });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file] });
-  else downloadInvoiceImage();
+  try {
+    // 1. استدعاء دالتك التي تحول الفاتورة إلى Canvas أو Blob
+    // ملاحظة: يفضل مشاركة صورة PNG لأن متصفحات الهاتف تدعمها في واتساب أفضل من PDF
+    const blob = await makeInvoicePdfBlob(); 
+    const file = new File([blob], "invoice.pdf", { type: "application/pdf" });
+
+    // 2. التحقق من دعم الهاتف لمشاركة الملفات
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "فاتورة طلب - متجر أبو محمود",
+        text: "مرحباً، مرفق فاتورة الطلب."
+      });
+      return; // تم الإرسال بنجاح
+    }
+  } catch (err) {
+    console.log("تعذرت المشاركة المباشرة:", err);
+  }
+
+  // 3. خطة بديلة إذا رفض المتصفح مشاركة الملف: تحميل الفاتورة + فتح واتساب
+  await downloadInvoiceImage();
+  const phone = "963952174376"; // ضع رقم هاتف المتجر هنا
+  const msg = encodeURIComponent("مرحباً، قمت بتحميل الفاتورة وسأقوم بإرفاقها الآن.");
+  window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
 }
+
 
   window.onerror = function(msg, url, line) { alert('العطل في سطر: ' + line + '\nالسبب: ' + msg); };
     
