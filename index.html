@@ -1587,76 +1587,56 @@ async function generateInvoiceCanvas() {
     });
 }
 async function downloadInvoiceImage() {
-    try {
-        if (!window.html2pdf) {
-            await new Promise((res, rej) => {
-                const s = document.createElement('script');
-                s.src = 'https://cloudflare.com';
-                s.onload = res; s.onerror = rej;
-                document.head.appendChild(s);
-            });
-        }
-        const area = document.getElementById('invoicePrintableArea') || document.getElementById('invoiceModal').querySelector('div[style*="background"]');
-        const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
-        const fileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
-        const opt = {
-            margin: 0,
-            filename: fileName,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-            jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
-        };
-        const pdfBlob = await html2pdf().set(opt).from(area).outputPdf('blob');
-        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-            await navigator.share({ files: [pdfFile], title: 'فاتورة متجر أبو محمود' });
-        } else {
-            const url = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.download = fileName;
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    } catch (e) {
-        alert('تعذر إنشاء ملف PDF، تأكد من اتصال الإنترنت.');
-    }
+async function makeInvoicePdfBlob() {
+  const canvas = await generateInvoiceCanvas();
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+  const bin = atob(dataUrl.split(',').pop());
+  const img = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+
+  const w = canvas.width, h = canvas.height;
+  const pw = 420, ph = Math.round((h * pw) / w);
+  const enc = new TextEncoder(), parts = [], offs = {};
+  let len = 0;
+  const add = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+  const obj = (n, s) => { offs[n] = len; add(n + ' 0 obj\n' + s + '\nendobj\n'); };
+
+  add('%PDF-1.4\n');
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>');
+  offs[4] = len;
+  add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + img.length + ' >>\nstream\n');
+  add(img);
+  add('\nendstream\nendobj\n');
+  const st = 'q ' + pw + ' 0 0 ' + ph + ' 0 0 cm /Im1 Do Q';
+  obj(5, '<< /Length ' + st.length + ' >>\nstream\n' + st + '\nendstream');
+
+  const xref = len;
+  add('xref\n0 6\n0000000000 65535 f \n');
+  for (let i = 1; i <= 5; i++) add(String(offs[i]).padStart(10, '0') + ' 00000 n \n');
+  add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+  return new Blob(parts, { type: 'application/pdf' });
 }
-    
+
+async function downloadInvoiceImage() {
+  const blob = await makeInvoicePdfBlob();
+  const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
+  a.click();
+}
 
 async function sendWhatsAppAfterInvoice() {
-  try {
-    if (!window.jspdf) {
-      await new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = 'https://unpkg.com';
-        s.onload = res; s.onerror = rej;
-        document.head.appendChild(s);
-      });
-    }
-    const area = document.getElementById('invoicePrintableArea') || document.querySelector('#invoiceModal div[style*="background"]');
-    const canvas = await html2canvas(area, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = (canvas.height * pdfW) / canvas.width;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH);
-
-    const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
-    const fileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
-    const pdfBlob = pdf.output('blob');
-    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      await navigator.share({ files: [pdfFile], title: 'فاتورة متجر أبو محمود' });
-    } else {
-      pdf.save(fileName);
-    }
-  } catch (e) {
-    alert('خطأ: ' + e.message);
+  const blob = await makeInvoicePdfBlob();
+  const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+  const fn = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
+  const file = new File([blob], fn, { type: 'application/pdf' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    await navigator.share({ files: [file], title: 'فاتورة متجر أبو محمود' });
+  } else {
+    downloadInvoiceImage();
   }
 }
 
