@@ -1665,31 +1665,87 @@ async function submitOrder() {
 
   const d = new Date();
   const order = {
+async function submitOrder() {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const addr = document.getElementById('custAddress').value.trim();
+  const pm = document.getElementById('paymentMethod').value;
+  const tx = (document.getElementById('shamTxId')?.value || '').trim();
+  const totText = (document.getElementById('cartTotal')?.innerText || '0').replace(/[^0-9.]/g, '');
+
+  if (!name || !phone || !addr) return alert('يرجى إدخال الاسم والهاتف والعنوان');
+  if (pm === 'shamcash' && !tx) return alert('يرجى إدخال رقم عملية التحويل');
+
+  const items = [];
+  let lines = '';
+  document.querySelectorAll('#cartItemsContainer > div, #cartItems > div').forEach(row => {
+    const txt = row.innerText.replace(/\s+/g, ' ').trim();
+    if (txt && !txt.includes('فارغة')) {
+      lines += '• ' + txt + '\n';
+      items.push({ name: txt, qty: 1, price: 0, total: 0, note: '' });
+    }
+  });
+  if (!lines) return alert('السلة فارغة!');
+
+  const d = new Date();
+  const ord = {
     id: Date.now(),
     date: d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(),
-    customerName: name,
-    customerPhone: phone,
-    customerAddress: address,
-    paymentMethod: method === 'shamcash' ? 'شام كاش (' + txId + ')' : 'الدفع عند الاستلام',
-    items: items,
-    total: total.toFixed(2)
+    customerName: name, customerPhone: phone, customerAddress: addr,
+    paymentMethod: pm === 'shamcash' ? 'شام كاش (' + tx + ')' : 'عند الاستلام',
+    items: items, total: totText
   };
 
-  storeData.orders = storeData.orders || [];
-  storeData.orders.unshift(order);
-  if (typeof saveStoreData === 'function') await saveStoreData();
-  if (typeof syncToCloud === 'function') await syncToCloud();
+  try {
+    const dbUrl = 'https://firebaseio.com';
+    const cur = await (await fetch(dbUrl)).json() || {};
+    cur.orders = Array.isArray(cur.orders) ? cur.orders : [];
+    cur.orders.unshift(ord);
+    await fetch(dbUrl, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cur) });
+  } catch (e) {}
 
-  const wa = String(storeData.settings?.whatsapp || '963954730783').replace(/\D/g, '');
-  const msg = '*طلب جديد من ' + (storeData.settings?.storeName || 'متجر أبو محمود') + '*\n' +
-    '*الاسم:* ' + name + '\n*الهاتف:* ' + phone + '\n*العنوان:* ' + address + '\n*طريقة الدفع:* ' + order.paymentMethod + '\n\n*الطلبات:*\n' + itemsText + '\n*الإجمالي المطلوب:* $' + total.toFixed(2);
+  const msg = '*طلب جديد - متجر أبو محمود*\nالزبون: ' + name + '\nالهاتف: ' + phone + '\nالعنوان: ' + addr + '\nالدفع: ' + ord.paymentMethod + '\n---\n' + lines + '---\n*الإجمالي: $' + totText + '*';
+  window.location.href = 'https://wa.me' + encodeURIComponent(msg);
+}
 
-  window.open('https://wa.me' + wa + '?text=' + encodeURIComponent(msg), '_blank');
-  cart = [];
-  if (typeof updateCartUI === 'function') updateCartUI();
-  if (typeof closeModal === 'function') closeModal('cartModal');
-      }
-    
+async function makeInvoicePdfBlob() {
+  const area = document.getElementById('invoicePrintableArea') || document.querySelector('#invoiceModal div[style*="background"]');
+  const canvas = await html2canvas(area, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+  const bin = atob(canvas.toDataURL('image/jpeg', 0.92).split(',').pop());
+  const img = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+  const w = canvas.width, h = canvas.height, pw = 420, ph = Math.round((h * pw) / w);
+  const enc = new TextEncoder(), parts = [], offs = {};
+  let len = 0;
+  const add = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+  const obj = (n, s) => { offs[n] = len; add(n + ' 0 obj\n' + s + '\nendobj\n'); };
+  add('%PDF-1.4\n');
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>');
+  offs = len;
+  add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + img.length + ' >>\nstream\n');
+  add(img); add('\nendstream\nendobj\n');
+  const st = 'q ' + pw + ' 0 0 ' + ph + ' 0 0 cm /Im1 Do Q';
+  obj(5, '<< /Length ' + st.length + ' >>\nstream\n' + st + '\nendstream');
+  const xref = len; add('xref\n0 6\n0000000000 65535 f \n');
+  for (let i = 1; i <= 5; i++) add(String(offs[i]).padStart(10, '0') + ' 00000 n \n');
+  add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+  return new Blob(parts, { type: 'application/pdf' });
+}
+
+async function downloadInvoiceImage() {
+  const blob = await makeInvoicePdfBlob();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'فاتورة-متجر-أبو-محمود.pdf'; a.click();
+}
+
+async function sendWhatsAppAfterInvoice() {
+  const blob = await makeInvoicePdfBlob();
+  const file = new File([blob], 'فاتورة-متجر-أبو-محمود.pdf', { type: 'application/pdf' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file] });
+  else downloadInvoiceImage();
+}
+
     
 
 
