@@ -1746,6 +1746,7 @@ async function sendWhatsAppAfterInvoice() {
   else downloadInvoiceImage();
 }
 
+  window.onerror = function(msg, url, line) { alert('العطل في سطر: ' + line + '\nالسبب: ' + msg); };
     
 
 
