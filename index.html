@@ -1774,6 +1774,25 @@ function sendWhatsAppOnly() {
 
 
 </script>
+    <script>
+function sendWhatsAppOnly() {
+  const phone = "963952174376";
+  const inputs = document.querySelectorAll("input");
+  const name = inputs?.value || "غير محدد";
+  const custPhone = inputs?.value || "غير محدد";
+  const address = inputs?.value || "غير محدد";
+
+  const msg = encodeURIComponent(
+    `طلب جديد - متجر أبو محمود:\n` +
+    `الاسم: ${name}\n` +
+    `الهاتف: ${custPhone}\n` +
+    `العنوان: ${address}`
+  );
+
+  window.location.href = `https://wa.me/${phone}?text=${msg}`;
+}
+    </script>
+    
 </body>
 </html>
 
