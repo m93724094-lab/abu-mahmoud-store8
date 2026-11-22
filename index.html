@@ -1626,72 +1626,56 @@ async function downloadInvoiceImage() {
     
 
 async function sendWhatsAppAfterInvoice() {
-    const rawWa = (typeof storeData !== 'undefined' && storeData.settings)
-        ? (storeData.settings.whatsapp || storeData.settings.wa || '')
-        : '';
-    const phone = String(rawWa).replace(/\D/g, '');
-    if (!phone) {
-        alert('رقم الواتساب غير مضبوط في الإعدادات');
-        return;
+  try {
+    if (!window.html2pdf) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cloudflare.com';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
     }
+    const cust = (document.getElementById('invCustName')?.innerText || '').trim();
+    const addr = (document.getElementById('invCustAddress')?.innerText || '').trim();
+    const dt = (document.getElementById('invDate')?.innerText || '').trim();
+    const tot = (document.getElementById('invTotal')?.innerText || '').trim();
+    const rows = document.getElementById('invTableBody')?.innerHTML || '';
 
-    const cName = document.getElementById('invCustName')?.innerText || '';
-    const cAddr = document.getElementById('invCustAddress')?.innerText || '';
-    const cTotal = document.getElementById('invTotalAmount')?.innerText || '';
-    const cSerial = document.getElementById('invSerial')?.innerText || '';
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'width:540px;background:#fff;color:#0d3b75;border:2px solid #1557a8;font-family:Cairo,sans-serif;direction:rtl';
+    wrap.innerHTML =
+      '<div style="height:14px;background:linear-gradient(135deg,#1557a8,#0a2e5c);border-bottom-left-radius:60% 100%"></div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px">' +
+      '<div><div style="background:#0d3b75;color:#fff;padding:3px 10px;border-radius:15px;font-size:12px;margin-bottom:4px">📞 0954730783</div>' +
+      '<div style="background:#0d3b75;color:#fff;padding:3px 10px;border-radius:15px;font-size:12px">📍 العنوان : العيون</div></div>' +
+      '<div style="text-align:center"><h2 style="margin:0;font-size:22px;font-weight:900">متجر أبو محمود</h2><b style="color:#1557a8;font-size:13px">لقطع الدراجات النارية</b><br><small>— ★ ★ ★ —</small></div>' +
+      '<div style="font-size:36px">🏍️</div></div>' +
+      '<div style="padding:4px 14px 8px;font-size:13px;font-weight:700">التاريخ: ' + dt + '<br>المطلوب من السيد: ' + cust + ' المحترم | المقيم في: ' + addr + '</div>' +
+      '<div style="padding:0 10px"><table style="width:100%;border-collapse:collapse;border:2px solid #1557a8;text-align:center;font-size:12px">' +
+      '<thead style="background:#3b82f6;color:#fff"><tr><th style="padding:5px;border:1px solid #1557a8">الإجمالي</th><th style="padding:5px;border:1px solid #1557a8">نوع المنتج</th><th style="padding:5px;border:1px solid #1557a8">العدد</th><th style="padding:5px;border:1px solid #1557a8">السعر</th><th style="padding:5px;border:1px solid #1557a8">ملاحظات</th></tr></thead>' +
+      '<tbody style="color:#000">' + rows + '</tbody></table></div>' +
+      '<div style="padding:10px 14px;font-weight:900;font-size:14px">المجموع : ' + tot + ' فقط لا غير</div>' +
+      '<div style="height:14px;background:linear-gradient(135deg,#0a2e5c,#2563eb);border-top-right-radius:65% 100%"></div>';
 
-        const msg = "فاتورة جديدة - وكالة أبو محمود | الرقم: " + cSerial + " | الاسم: " + cName + " | العنوان: " + cAddr + " | الإجمالي: " + cTotal;
-    const waUrl = "https://wa.me" + phone + "?text=" + encodeURIComponent(msg);
-    window.open(waUrl, '_blank');
-}
+    const fileName = 'فاتورة-متجر-أبو-محمود-' + (cust || 'زبون') + '.pdf';
+    const opt = { margin: 0, filename: fileName, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' } };
+    const pdfBlob = await html2pdf().set(opt).from(wrap).outputPdf('blob');
+    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-function closeInvoiceModal() {
-
-    document.getElementById('invoiceModal').style.display = 'none';
-    if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'flex';
-}
-    </script>
-<script>
-    
-    function submitOrder() {
-  const modal = document.querySelector('#cartModal, .modal.active, [id*="cart" i][style*="flex"], [id*="cart" i][style*="block"]') || document;
-  const inputs = modal.querySelectorAll('input:not([type="hidden"]), textarea');
-  
-  const name = (document.getElementById('custName') || document.getElementById('customerName') || inputs[0])?.value.trim() || "";
-  const phone = (document.getElementById('custPhone') || document.getElementById('customerPhone') || inputs[1])?.value.trim() || "";
-  const address = (document.getElementById('custAddress') || document.getElementById('customerAddress') || inputs[2])?.value.trim() || "";
-  const payment = modal.querySelector('select')?.value || "الدفع عند الاستلام";
-
-
-  let itemsText = "";
-  let total = 0;
-
-  if (typeof cart !== 'undefined' && cart.length > 0) {
-    cart.forEach(item => {
-      const price = parseFloat(item.price || item.unitPrice || 0);
-      const qty = parseInt(item.qty || item.quantity || 1);
-      const sub = price * qty;
-      total += sub;
-      itemsText += `- ${item.name} (${qty} × $${price.toFixed(2)}) = $${sub.toFixed(2)}\n`;
-    });
-  } else {
-    alert("السلة فارغة!");
-    return;
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      await navigator.share({ files: [pdfFile], title: 'فاتورة متجر أبو محمود' });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(pdfBlob);
+      a.download = fileName;
+      a.click();
+    }
+  } catch (e) {
+    alert('حدث خطأ أثناء تجهيز ملف PDF');
   }
-
-  let message = `*طلب جديد من متجر أبو محمود*\n`;
-  message += `*الاسم:* ${name}\n`;
-  message += `*الهاتف:* ${phone}\n`;
-  message += `*العنوان:* ${address}\n`;
-  message += `*طريقة الدفع:* ${payment}\n`;
-  message += `\n*الطلبات:*\n${itemsText}\n`;
-  message += `*الإجمالي المطلوب:* $${total.toFixed(2)}`;
-
-  const storePhone = "963952174376";
-  const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`;
-  
-  window.location.href = whatsappUrl;
 }
+    
+
 
 </script>
 </body>
