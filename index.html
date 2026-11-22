@@ -1632,15 +1632,14 @@ function closeInvoiceModal() {
 <script>
     
     function submitOrder() {
-  const name = document.getElementById('customerName')?.value.trim() || "";
-  const phone = document.getElementById('customerPhone')?.value.trim() || "";
-  const address = document.getElementById('customerAddress')?.value.trim() || "";
-  const payment = document.getElementById('paymentMethod')?.value || "الدفع عند الاستلام";
+  const modal = document.querySelector('#cartModal, .modal.active, [id*="cart" i][style*="flex"], [id*="cart" i][style*="block"]') || document;
+  const inputs = modal.querySelectorAll('input:not([type="hidden"]), textarea');
+  
+  const name = (document.getElementById('custName') || document.getElementById('customerName') || inputs[0])?.value.trim() || "";
+  const phone = (document.getElementById('custPhone') || document.getElementById('customerPhone') || inputs[1])?.value.trim() || "";
+  const address = (document.getElementById('custAddress') || document.getElementById('customerAddress') || inputs[2])?.value.trim() || "";
+  const payment = modal.querySelector('select')?.value || "الدفع عند الاستلام";
 
-  if (!name || !phone || !address) {
-    alert("يرجى تعبئة الاسم ورقم الهاتف والعنوان بالتفصيل");
-    return;
-  }
 
   let itemsText = "";
   let total = 0;
