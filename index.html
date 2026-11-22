@@ -1639,7 +1639,56 @@ async function sendWhatsAppAfterInvoice() {
     downloadInvoiceImage();
   }
 }
+async function submitOrder() {
+  if (!cart || cart.length === 0) return alert('السلة فارغة!');
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const method = document.getElementById('paymentMethod').value;
+  const txId = (document.getElementById('shamTxId')?.value || '').trim();
 
+  if (!name || !phone || !address) return alert('يرجى تعبئة الاسم والهاتف والعنوان.');
+  if (method === 'shamcash' && !txId) return alert('يرجى إدخال رقم عملية التحويل.');
+
+  let total = 0;
+  let itemsText = '';
+  const items = cart.map(item => {
+    const prod = (storeData.products || []).find(p => p.id === item.id) || item;
+    const price = (typeof getItemUnitPrice === 'function') ? getItemUnitPrice(prod, item.qty) : parseFloat(prod.retailPrice || prod.retail || 0);
+    const sub = price * item.qty;
+    total += sub;
+    const isWh = item.qty >= (prod.minWholesale || storeData.settings?.defaultMinWholesale || 5);
+    itemsText += '- ' + prod.name + ' (' + item.qty + ' × $' + price.toFixed(2) + ') = $' + sub.toFixed(2) + '\n';
+    return { name: prod.name, qty: item.qty, price: price, total: sub, note: isWh ? 'جملة' : 'مفرق' };
+  });
+
+  const d = new Date();
+  const order = {
+    id: Date.now(),
+    date: d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(),
+    customerName: name,
+    customerPhone: phone,
+    customerAddress: address,
+    paymentMethod: method === 'shamcash' ? 'شام كاش (' + txId + ')' : 'الدفع عند الاستلام',
+    items: items,
+    total: total.toFixed(2)
+  };
+
+  storeData.orders = storeData.orders || [];
+  storeData.orders.unshift(order);
+  if (typeof saveStoreData === 'function') await saveStoreData();
+  if (typeof syncToCloud === 'function') await syncToCloud();
+
+  const wa = String(storeData.settings?.whatsapp || '963954730783').replace(/\D/g, '');
+  const msg = '*طلب جديد من ' + (storeData.settings?.storeName || 'متجر أبو محمود') + '*\n' +
+    '*الاسم:* ' + name + '\n*الهاتف:* ' + phone + '\n*العنوان:* ' + address + '\n*طريقة الدفع:* ' + order.paymentMethod + '\n\n*الطلبات:*\n' + itemsText + '\n*الإجمالي المطلوب:* $' + total.toFixed(2);
+
+  window.open('https://wa.me' + wa + '?text=' + encodeURIComponent(msg), '_blank');
+  cart = [];
+  if (typeof updateCartUI === 'function') updateCartUI();
+  if (typeof closeModal === 'function') closeModal('cartModal');
+      }
+    
     
 
 
