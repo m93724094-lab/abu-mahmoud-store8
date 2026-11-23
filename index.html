@@ -505,6 +505,9 @@
                 <label>صورة القطعة (تُضغط تلقائياً):</label>
                 <input type="file" id="prodImgFile" accept="image/*">
                 <a href="https://adobe.com" target="_blank" style="display:block; text-align:center; background:#0284c7; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; font-size:0.88rem; font-weight:bold; margin-top:6px;">✨ تفريغ الخلفية مجاناً بدقة استوديو (Adobe)</a>
+          <button type="button" onclick="uploadToImgBB()" style="margin-top:8px; background:#2563eb; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">⬆️ رفع الصورة إلى ImgBB</button>
+<p id="imgbbStatus" style="font-size:0.85rem; margin-top:5px; color:#16a34a;"></p>
+<input type="text" id="imgbbUrlResult" placeholder="سيظهر رابط الصورة هنا تلقائياً" readonly style="margin-top:5px;">
             </div>
             <div style="display:flex; gap:8px; margin-bottom:20px;">
                 <button class="primary-btn" style="flex:1;" onclick="saveProduct()">💾 حفظ القطعة</button>
@@ -1640,6 +1643,41 @@
         gridEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">⏳ جاري تحميل قطع الغيار...</div>';
     }
     initCloudStore();
+    async function uploadToImgBB() {
+  const fileInput = document.getElementById('prodImg');
+  const statusText = document.getElementById('imgbbStatus');
+  const urlInput = document.getElementById('imgbbUrlResult');
+  const apiKey = 'e23993fa72c7dd3b3c484cc829588b9c';
+
+  if (!fileInput || !fileInput.files.length) {
+    alert('الرجاء اختيار صورة القطعة أولاً!');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('image', fileInput.files);
+
+  statusText.innerText = 'جاري رفع الصورة... ⏳';
+
+  try {
+    const response = await fetch(`https://imgbb.com{apiKey}`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      statusText.innerText = '✅ تم الرفع بنجاح!';
+      urlInput.value = result.data.url;
+    } else {
+      statusText.innerText = '❌ فشل الرفع: ' + result.error.message;
+    }
+  } catch (error) {
+    statusText.innerText = '❌ حدث خطأ في الاتصال بالخادم.';
+  }
+    }
+    
 </script>
 </body>
 </html>
