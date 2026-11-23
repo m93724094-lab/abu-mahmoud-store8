@@ -7,8 +7,17 @@
     <link rel="manifest" href="manifest.json">
     <script>window.onerror = function(m, u, l) { console.error("الخطأ في سطر: " + l + "\n" + m); };</script>
     
-    <script src="https://unpkg.com"></script>
-    <script src="https://cloudflare.com"></script>
+            <script>
+        (function(){
+            var s1 = document.createElement('script');
+            s1.src = 'https:/' + '/cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+            document.head.appendChild(s1);
+
+            var s2 = document.createElement('script');
+            s2.src = 'https:/' + '/cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+            document.head.appendChild(s2);
+        })();
+    </script>
 
     <style>
         :root {
@@ -1524,16 +1533,19 @@
         }
     }
 
-    async function sendInvoiceImageToWhatsApp() {
+        async function sendInvoiceImageToWhatsApp() {
         const btn = document.getElementById('btnSendWaImg');
         if (btn) {
             btn.disabled = true;
             btn.textContent = "⏳ جاري تجهيز صورة الفاتورة...";
         }
+        const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
+        const waUrl = 'https:/' + '/wa.me/' + waPhone + '?text=' + encodeURIComponent(lastWhatsAppMessage);
+
         try {
             const blob = await captureInvoiceImageBlob();
             const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
-            const fileName = `فاتورة-متجر-أبو-محمود-${cust}.png`;
+            const fileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.png';
             const file = new File([blob], fileName, { type: 'image/png' });
 
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1550,21 +1562,19 @@
             a.download = fileName;
             a.click();
 
-            const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
-            const url = `https://wa.me{waPhone}?text=${encodeURIComponent(lastWhatsAppMessage)}`;
             setTimeout(() => {
-                window.open(url, '_blank');
+                window.location.href = waUrl;
             }, 600);
         } catch (e) {
-            const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
-            window.open(`https://wa.me{waPhone}?text=${encodeURIComponent(lastWhatsAppMessage)}`, '_blank');
+            window.location.href = waUrl;
         } finally {
             if (btn) {
                 btn.disabled = false;
                 btn.textContent = "💬 إرسال الفاتورة للواتساب";
             }
         }
-    }
+        }
+    
 
     document.getElementById('loadingOverlay').style.display = 'none';
     const gridEl = document.getElementById('productsGrid');
