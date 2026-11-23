@@ -5,74 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر أبو محمود لقطع الدراجات النارية</title>
     <link rel="manifest" href="manifest.json">
-   <script>window.onerror = function(m, u, l) { alert("الخطأ في سطر: " + l + "\n" + m); };</script>
+    <script>window.onerror = function(m, u, l) { console.error("الخطأ في سطر: " + l + "\n" + m); };</script>
     
-    <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
-        <style>
+    <script src="https://unpkg.com"></script>
+    <script src="https://cloudflare.com"></script>
+
+    <style>
         :root {
-    --bg-primary: #041080;
-    --bg-card: #1c2530;
-    --accent-color: #0011ff;
-    --text-main: #ffffff;
-    --text-muted: #9ca3af;
-    --border-color: rgba(59, 130, 246, 0.35);
+            --bg-primary: #041080;
+            --bg-card: #1c2530;
+            --accent-color: #0011ff;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: rgba(59, 130, 246, 0.35);
         }
-.floating-cart-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 16px;
-  background: var(--accent-color, #0011ff);
-  color: #fff;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-  z-index: 9999;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.product-card.in-cart {
-  border: 2px solid #10b981 !important;
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
-}
-
-.quick-qty-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(15, 23, 42, 0.85);
-  border-radius: 10px;
-  padding: 6px 14px;
-  margin-top: 10px;
-}
-
-.quick-qty-btn {
-  background: var(--accent-color, #0011ff);
-  color: #fff;
-  border: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.quick-qty-num {
-  background: #fff;
-  color: #0f172a;
-  padding: 3px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 16px;
-}
-        
-
+        .floating-cart-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 16px;
+            background: var(--accent-color, #0011ff);
+            color: #fff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .product-card.in-cart {
+            border: 2px solid #10b981 !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
+        }
+        .quick-qty-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 10px;
+            padding: 6px 14px;
+            margin-top: 10px;
+        }
+        .quick-qty-btn {
+            background: var(--accent-color, #0011ff);
+            color: #fff;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .quick-qty-num {
+            background: #fff;
+            color: #0f172a;
+            padding: 3px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body {
             background-color: var(--bg-primary);
@@ -157,9 +153,9 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
         .stock-available { background-color: #16a34a; }
-        .stock-abundant { background-color:#dc2626 ; }
+        .stock-abundant { background-color: #dc2626; }
         .stock-limited { background-color: #d97706; }
-        .cat-tag {
+        .category-tag, .cat-tag {
             display: inline-block;
             font-size: 0.75rem;
             background: rgba(255,255,255,0.1);
@@ -168,42 +164,11 @@
             color: var(--text-muted);
             margin-bottom: 6px;
         }
-                .product-img {
-            width: 100%;
-            height: 100px;object-fit: contain;
-                    
-
-            object-position: center;
-            background-color: #ffffff;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-                } 
-.product-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-            
         .product-info { padding: 15px; flex-grow: 1; }
         .product-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 6px; }
         .product-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
         .price-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9rem; }
         .price-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .price-highlight { color: var(--accent-color); font-weight: bold; font-size: 1.05rem; }
-        .card-actions { padding: 0 15px 15px; display: flex; gap: 8px; align-items: center; }
-        .qty-input {
-            width: 65px;
-            padding: 9px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-primary);
-            color: var(--text-main);
-            text-align: center;
-            font-weight: bold;
-        }
         .modal {
             display: none;
             position: fixed;
@@ -280,60 +245,54 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-            .admin-menu-wrap {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 1001;
-}
-
-
-.dots-menu {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 6px 12px;
-  color: var(--text-main);
-  line-height: 1;
-}
-
-.admin-dropdown {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 110%;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  min-width: 140px;
-  z-index: 1000;
-  overflow: hidden;
-}
-
-.admin-dropdown.show {
-  display: block;
-}
-
-.admin-dropdown button {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  background: none;
-  color: var(--text-main);
-  text-align: right;
-  font-size: 14px;
-  cursor: pointer;
-  display: block;
-}
-
-.admin-dropdown button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-            
+        .admin-menu-wrap {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+        }
+        .dots-menu {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 20px;
+        .dots-menu {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 6px 12px;
+            color: var(--text-main);
+            line-height: 1;
+        }
+        .admin-dropdown {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 110%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            min-width: 140px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .admin-dropdown.show { display: block; }
+        .admin-dropdown button {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            color: var(--text-main);
+            text-align: right;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+        }
+        .admin-dropdown button:hover { background-color: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -350,12 +309,11 @@
         <div class="top-actions">
             <button onclick="openModal('qrModal')">📱 باركود المتجر</button>
             <div class="admin-menu-wrap">
-  <button type="button" class="dots-menu" onclick="toggleAdminMenu(event)" title="خيارات الإدارة">⋮</button>
-  <div id="adminDropdownMenu" class="admin-dropdown">
-    <button type="button" onclick="openAdminAuth()">⚙️ الإدارة</button>
-  </div>
-</div>
-
+                <button type="button" class="dots-menu" onclick="toggleAdminMenu(event)" title="خيارات الإدارة">⋮</button>
+                <div id="adminDropdownMenu" class="admin-dropdown">
+                    <button type="button" onclick="openAdminAuth()">⚙️ الإدارة</button>
+                </div>
+            </div>
             <button class="primary-btn" onclick="openCart()">🛒 السلة (<span id="cartCount">0</span>)</button>
         </div>
 
@@ -371,9 +329,7 @@
         </div>
 
         <div class="categories-bar" id="categoriesBar"></div>
-
         <input type="text" class="search-bar" id="searchInput" placeholder="🔍 ابحث عن قطعة غيار أو اكسسوار..." oninput="renderProducts()">
-
         <div class="products-grid" id="productsGrid"></div>
     </div>
 </div>
@@ -390,10 +346,11 @@
         <button class="primary-btn" onclick="copyStoreLink()">🔗 نسخ الرابط</button>
     </div>
 </div>
+
 <button class="floating-cart-btn" onclick="openCart()">
-  🛒 السلة (<span id="floatingCartCount">0</span>)
+    🛒 السلة (<span id="floatingCartCount">0</span>)
 </button>
-    
+
 <div class="modal" id="cartModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -436,19 +393,16 @@
             </div>
         </div>
 
-        <!-- زر تحميل الفاتورة PDF -->
-<button type="button" onclick="downloadInvoiceImage()" style="width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 10px; cursor: pointer;">
-  📄 تحميل الفاتورة (PDF)
-</button>
+        <button type="button" onclick="submitOrder('preview')" style="width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 10px; cursor: pointer;">
+            📄 معاينة الفاتورة
+        </button>
 
-<!-- زر إرسال الطلب عبر واتساب -->
-<button type="button" onclick="sendWhatsAppOnly()" style="width: 100%; padding: 14px; background-color: #0056b3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
-  📲 إرسال الطلب عبر واتساب
-</button>
-
+        <button type="button" onclick="submitOrder('whatsapp')" style="width: 100%; padding: 14px; background-color: #09428c; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+            📲 إرسال الفاتورة عبر واتساب
+        </button>
     </div>
-    
 </div>
+
 <div class="modal" id="authModal">
     <div class="modal-content" style="max-width: 400px; text-align: center;">
         <div class="modal-header">
@@ -498,19 +452,18 @@
             <div class="form-group">
                 <label>القسم</label>
                 <select id="prodCategory">
-    <option value="محرك">محرك</option>
-    <option value="اكسسوارات">اكسسوارات</option>
-    <option value="كهرباء">كهرباء</option>
-    <option value="هيكل">هيكل</option>
-</select>
-
+                    <option value="محرك">محرك</option>
+                    <option value="اكسسوارات">اكسسوارات</option>
+                    <option value="كهرباء">كهرباء</option>
+                    <option value="هيكل">هيكل</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>حالة التوفر</label>
                 <select id="prodStock">
                     <option value="available">🟢 متوفر</option>
+                       <option value="available">🟢 متوفر</option>
                     <option value="abundant">🔴 نفذت الكمية</option>
-
                     <option value="limited">🟠 كمية محدودة</option>
                 </select>
             </div>
@@ -535,8 +488,7 @@
             <div class="form-group">
                 <label>صورة القطعة (تُضغط تلقائياً):</label>
                 <input type="file" id="prodImgFile" accept="image/*">
-                <a href="https://www.adobe.com/express/feature/image/remove-background" target="_blank" style="display:block; text-align:center; background:#0284c7; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; font-size:0.88rem; font-weight:bold; margin-top:6px;">✨ تفريغ الخلفية مجاناً بدقة استوديو (Adobe)</a>
-                
+                <a href="https://adobe.com" target="_blank" style="display:block; text-align:center; background:#0284c7; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; font-size:0.88rem; font-weight:bold; margin-top:6px;">✨ تفريغ الخلفية مجاناً بدقة استوديو (Adobe)</a>
             </div>
             <div style="display:flex; gap:8px; margin-bottom:20px;">
                 <button class="primary-btn" style="flex:1;" onclick="saveProduct()">💾 حفظ القطعة</button>
@@ -547,7 +499,8 @@
             <input type="text" class="search-bar" id="adminSearchInput" placeholder="🔍 ابحث في الإدارة للتعديل أو الاستبدال أو الحذف..." oninput="renderAdminProducts()" style="margin-bottom:12px;">
             <div id="adminProductsList"></div>
         </div>
-                <div id="categoriesTab" class="tab-pane">
+
+        <div id="categoriesTab" class="tab-pane">
             <h4 style="margin-bottom:12px;">🗂 إدارة أقسام المتجر</h4>
             <input type="hidden" id="editCatIndex">
             <div style="display:flex; gap:8px; margin-bottom:15px;">
@@ -580,7 +533,8 @@
                 <button type="button" onclick="removeBgImage()">🔄 إزالة الخلفية</button>
             </div>
         </div>
-                <div id="settingsTab" class="tab-pane">
+
+        <div id="settingsTab" class="tab-pane">
             <div class="form-group"><label>اسم المتجر</label><input type="text" id="setStoreName"></div>
             <div class="form-group"><label>الوصف الفرعي</label><input type="text" id="setStoreSubtitle"></div>
             <div class="form-group"><label>رقم واتساب لاستلام الطلبات (مع الرمز الدولي مثل 9639xxxxxxxx)</label><input type="text" id="setWhatsapp"></div>
@@ -592,12 +546,97 @@
         </div>
     </div>
 </div>
-<script>window.onerror = function(msg, url, line) { document.getElementById('loadingText').innerHTML = 'خطأ في السطر ' + line + ':<br>' + msg; };</script>
-    
-<script>
-    const DB_URL = "https://abu-mahmoud-store-default-rtdb.firebaseio.com";
 
-    
+<div id="invoiceModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:99999; overflow:auto; padding:12px; flex-direction:column; align-items:center;">
+    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; width:100%; max-width:680px;">
+        <button type="button" id="btnSendWaImg" onclick="sendInvoiceImageToWhatsApp()" style="background:#25d366; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer; flex:1.3; min-width:170px;">💬 إرسال الفاتورة للواتساب</button>
+        <button type="button" onclick="downloadInvoiceImageFile()" style="background:#16a34a; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer; flex:1; min-width:140px;">📥 حفظ كصورة</button>
+        <button type="button" onclick="closeInvoiceModal()" style="background:#dc2626; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer;">✖ إغلاق</button>
+    </div>
+
+    <div style="width:100%; max-width:680px; overflow-x:auto; border-radius:4px; box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+        <div id="invoiceCaptureArea" dir="rtl" style="width:680px; min-width:680px; background:#ffffff; color:#09428c; font-family:'Cairo', Tahoma, Arial, sans-serif; border:2px solid #09428c; position:relative; overflow:hidden; box-sizing:border-box;">
+            <svg viewBox="0 0 220 120" style="position:absolute; top:0; left:0; width:210px; height:115px; z-index:1; pointer-events:none;">
+                <path d="M0,0 L210,0 C160,15 130,65 0,95 Z" fill="#8cc6ec" opacity="0.55"/>
+                <path d="M0,0 L175,0 C130,15 105,55 0,78 Z" fill="#1b75bc" opacity="0.8"/>
+                <path d="M0,0 L140,0 C105,12 85,42 0,60 Z" fill="#09428c"/>
+            </svg>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px 8px; position:relative; z-index:2;">
+                <div style="width:105px; height:105px; border:5px dashed #09428c; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#ffffff; box-shadow:0 2px 6px rgba(9,66,140,0.18); flex-shrink:0;">
+                    <span style="font-size:52px; line-height:1;">🏍️</span>
+                </div>
+
+                <div style="text-align:center; flex:1; padding:0 10px;">
+                    <h1 style="margin:0; font-size:36px; font-weight:900; color:#09428c; white-space:nowrap; line-height:1.15;">متجر أبو محمود</h1>
+                    <div style="font-size:19px; font-weight:800; color:#09428c; margin-top:4px; white-space:nowrap;">لقطع الدراجات النارية</div>
+                    <div style="color:#09428c; font-size:14px; margin-top:4px; letter-spacing:6px;">★ ★ ★</div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0; margin-top:14px;">
+                    <div style="background:#09428c; color:#ffffff; padding:5px 14px 5px 8px; border-radius:20px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:165px;">
+                        <span dir="ltr" style="letter-spacing:0.5px;">0954730783</span>
+                        <span style="background:#ffffff; color:#09428c; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">📞</span>
+                    </div>
+                    <div style="background:#09428c; color:#ffffff; padding:5px 14px 5px 8px; border-radius:20px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:165px;">
+                        <span>العنوان : العيون</span>
+                        <span style="background:#ffffff; color:#09428c; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">📍</span>
+                    </div>
+                </div>
+            </div>
+
+                        <div style="padding:2px 24px 12px; font-size:15px; font-weight:800; color:#09428c; line-height:2.1;">
+                <div style="display:flex; justify-content:flex-end; align-items:baseline;">
+                    <span>التاريخ :&nbsp;</span>
+                    <span id="invDate" style="border-bottom:2px dotted #09428c; min-width:170px; text-align:center; color:#000000; font-weight:700; display:inline-block; line-height:1.4;"></span>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
+                    <span style="white-space:nowrap;">المطلوب من السيد :</span>
+                    <span id="invCustName" style="flex:1.4; border-bottom:2px dotted #09428c; text-align:center; color:#000000; font-weight:800; line-height:1.4;"></span>
+                    <span style="white-space:nowrap;">المحترم المقيم في :</span>
+                    <span id="invCustAddress" style="flex:1; border-bottom:2px dotted #09428c; text-align:center; color:#000000; font-weight:800; line-height:1.4;"></span>
+                </div>
+            </div>
+
+            <div style="padding:0 22px; position:relative;">
+                <div style="position:absolute; top:54%; left:50%; transform:translate(-50%, -50%); opacity:0.14; pointer-events:none; text-align:center; z-index:1; width:280px;">
+                    <div style="width:125px; height:125px; border:6px dashed #09428c; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:60px;">🏍️</div>
+                    <div style="background:#09428c; color:#ffffff; font-weight:900; font-size:20px; padding:3px 16px; border-radius:8px; margin-top:8px; display:inline-block;">متجر أبو محمود</div>
+                    <div style="color:#09428c; font-weight:800; font-size:15px; margin-top:4px;">لقطع الدراجات النارية</div>
+                    <div style="color:#09428c; font-size:14px; letter-spacing:4px;">★ ★ ★</div>
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; border:2px solid #09428c; position:relative; z-index:2; text-align:center; font-size:14px;">
+                    <thead>
+                        <tr style="background:linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); color:#ffffff; font-weight:800; height:40px;">
+                            <th style="border:1.5px solid #09428c; width:19%;">السعر الإجمالي</th>
+                            <th style="border:1.5px solid #09428c; width:41%;">نوع المنتج</th>
+                            <th style="border:1.5px solid #09428c; width:10%;">العدد</th>
+                            <th style="border:1.5px solid #09428c; width:13%;">السعر</th>
+                            <th style="border:1.5px solid #09428c; width:17%;">الملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invTableBody" style="color:#000000; font-weight:700;"></tbody>
+                </table>
+            </div>
+
+            <div style="padding:16px 24px 44px; display:flex; align-items:baseline; gap:8px; font-size:17px; font-weight:900; color:#09428c; position:relative; z-index:2;">
+                <span>المجموع :</span>
+                <span id="invTotalAmount" style="border-bottom:2px dotted #09428c; min-width:170px; text-align:center; color:#000000; font-size:19px; line-height:1.4; display:inline-block;"></span>
+                <span>فقط لا غير</span>
+            </div>
+
+            <svg viewBox="0 0 680 42" preserveAspectRatio="none" style="position:absolute; bottom:0; left:0; width:100%; height:40px; z-index:1; pointer-events:none;">
+                <path d="M0,42 L680,42 L680,28 C520,5 320,38 0,10 Z" fill="#8cc6ec" opacity="0.6"/>
+                <path d="M0,42 L680,42 L680,34 C480,15 260,40 0,18 Z" fill="#1b75bc" opacity="0.85"/>
+                <path d="M0,42 L520,42 C340,26 180,40 0,25 Z" fill="#09428c"/>
+            </svg>
+        </div>
+    </div>
+</div>
+<script>
+    const DB_URL = "https://firebaseio.com";
+
     let storeData = {
         products: [],
         orders: [],
@@ -606,11 +645,11 @@
             storeName: "متجر أبو محمود",
             storeSubtitle: "قطع غيار واكسسوارات الدراجات النارية",
             defaultMinQty: 5,
-            whatsapp: "",
+            whatsapp: "963954730783",
             adminPass: "1234",
             shamAccount: "",
-            shamQr: "",theme: { bgPrimary: "#041080", bgCard: "#1c2530", accent: "#0011ff", text: "#ffffff", bgImage: "" }
-
+            shamQr: "",
+            theme: { bgPrimary: "#041080", bgCard: "#1c2530", accent: "#0011ff", text: "#ffffff", bgImage: "" }
         }
     };
 
@@ -618,8 +657,9 @@
     let pricingMode = 'auto';
     let selectedCategory = 'all';
     let displayLimit = 20;
-                    
-        async function compressImage(file, maxWidth = 600, quality = 0.85) {
+    let lastWhatsAppMessage = "";
+
+    async function compressImage(file, maxWidth = 600, quality = 0.85) {
         if (!file) return null;
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -643,10 +683,7 @@
         });
     }
 
-    
-    
-
-                    function compressBase64(base64Str, maxWidth = 450, quality = 0.72) {
+    function compressBase64(base64Str, maxWidth = 450, quality = 0.72) {
         return new Promise((resolve) => {
             if (!base64Str || !base64Str.startsWith('data:image')) return resolve(base64Str);
             const img = new Image();
@@ -667,9 +704,11 @@
         });
     }
 
-        async function initCloudStore() {
-            document.getElementById('loadingOverlay').style.display = 'none'; applyStoreUI(); renderCategories();
-            
+    async function initCloudStore() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        applyStoreUI();
+        renderCategories();
+
         const cached = localStorage.getItem('storeData_cache');
         if (cached) {
             try {
@@ -682,50 +721,45 @@
                 renderCategories();
                 renderProducts();
                 updateCartBadge();
-                document.getElementById('loadingOverlay').style.display = 'none';
-setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
-
-                
+                setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
             } catch (e) { console.error(e); }
         }
 
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4500);
-        const res = await fetch(`${DB_URL}/storeData.json`, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        const data = await res.json();
-        if (data) {
-            const newStr = JSON.stringify(data);
-            const oldStr = localStorage.getItem('storeData_cache');
-            if (newStr !== oldStr) {
-                storeData.products = data.products ? (Array.isArray(data.products) ? data.products : Object.values(data.products)) : [];
-                storeData.orders = data.orders ? (Array.isArray(data.orders) ? data.orders : Object.values(data.orders)) : [];
-                if (data.categories) {
-                    storeData.categories = Array.isArray(data.categories) ? data.categories : Object.values(data.categories);
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4500);
+            const res = await fetch(`${DB_URL}/storeData.json`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            const data = await res.json();
+            if (data) {
+                const newStr = JSON.stringify(data);
+                const oldStr = localStorage.getItem('storeData_cache');
+                if (newStr !== oldStr) {
+                    storeData.products = data.products ? (Array.isArray(data.products) ? data.products : Object.values(data.products)) : [];
+                    storeData.orders = data.orders ? (Array.isArray(data.orders) ? data.orders : Object.values(data.orders)) : [];
+                    if (data.categories) {
+                        storeData.categories = Array.isArray(data.categories) ? data.categories : Object.values(data.categories);
+                    }
+                    if (data.settings) {
+                        storeData.settings = { ...storeData.settings, ...data.settings };
+                        if (data.settings.theme) storeData.settings.theme = data.settings.theme;
+                    }
+                    try { localStorage.setItem('storeData_cache', newStr); } catch(e){}
+                    applyStoreUI();
+                    renderCategories();
+                    renderProducts();
+                    updateCartBadge();
                 }
-                if (data.settings) {
-                    storeData.settings = { ...storeData.settings, ...data.settings };
-                    if (data.settings.theme) storeData.settings.theme = data.settings.theme;
-                }
-                try { localStorage.setItem('storeData_cache', newStr); } catch(e){}
-                applyStoreUI();
-                renderCategories();
-                renderProducts();
-                updateCartBadge();
+            } else {
+                await syncToCloud();
             }
-        } else {
-            await syncToCloud();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
         }
-    } catch (err) {
-        console.error(err);
-    } finally {
-        document.getElementById('loadingOverlay').style.display = 'none';
-        setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
     }
-
-        }
-    
 
     async function syncToCloud() {
         try { localStorage.setItem('storeData_cache', JSON.stringify(storeData)); } catch (e) {}
@@ -751,7 +785,7 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
         document.getElementById('setStoreName').value = s.storeName;
         document.getElementById('setStoreSubtitle').value = s.storeSubtitle;
         document.getElementById('setDefaultMinQty').value = s.defaultMinQty;
-        document.getElementById('setWhatsapp').value = s.whatsapp || "";
+        document.getElementById('setWhatsapp').value = s.whatsapp || "963954730783";
         document.getElementById('setAdminPass').value = s.adminPass || "1234";
         document.getElementById('setShamAccount').value = s.shamAccount || "";
         document.getElementById('prodMinQty').value = s.defaultMinQty || 5;
@@ -766,21 +800,20 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
     }
 
     function renderCategories() {
-  const bar = document.getElementById('categoriesBar');
-  const select = document.getElementById('prodCat');
-  const cats = storeData.categories || [];
+        const bar = document.getElementById('categoriesBar');
+        const select = document.getElementById('prodCategory');
+        const cats = storeData.categories || [];
 
-  if (cats.length > 0 && (!selectedCategory || selectedCategory === 'all')) {
-    selectedCategory = cats[0];
-  }
+        if (cats.length > 0 && (!selectedCategory || selectedCategory === 'all')) {
+            selectedCategory = cats[0];
+        }
 
-  bar.innerHTML = cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
+        bar.innerHTML = cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
 
-  if (select) {
-    select.innerHTML = `<option value="">بدون قسم</option>` + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-  }
-}
-
+        if (select) {
+            select.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+    }
 
     function selectCategory(cat) {
         selectedCategory = cat;
@@ -805,11 +838,8 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
         if (resetLimit && !query) displayLimit = 20;
 
         const filtered = storeData.products.filter(p => {
-            
             const matchSearch = !query || (p.name && String(p.name).toLowerCase().includes(query));
-
- const matchCat = selectedCategory === 'all' || !p.category || (String(p.category).trim() === String(selectedCategory).trim());
-            
+            const matchCat = selectedCategory === 'all' || !p.category || (String(p.category).trim() === String(selectedCategory).trim());
             return matchSearch && matchCat;
         });
 
@@ -820,104 +850,102 @@ setTimeout(() => { try { generateStoreQR(); } catch(e){} }, 100);
 
         const itemsToShow = query ? filtered : filtered.slice(0, displayLimit);
         const stockLabels = {
-            available: { text: 'متوفر', cls: 'stock-available' },
+                    available: { text: 'متوفر', cls: 'stock-available' },
             abundant: { text: 'نفذت الكمية', cls: 'stock-abundant' },
             limited: { text: 'كمية محدودة', cls: 'stock-limited' }
         };
 
-          let html = itemsToShow.map(p => {
-    const st = stockLabels[p.stock] || { text: '', cls: '' };
-    const inCartItem = cart.find(c => String(c.id) === String(p.id));
-    const currentQty = inCartItem ? inCartItem.qty : 0;
+        let html = itemsToShow.map(p => {
+            const st = stockLabels[p.stock] || { text: '', cls: '' };
+            const inCartItem = cart.find(c => String(c.id) === String(p.id));
+            const currentQty = inCartItem ? inCartItem.qty : 0;
 
-        let priceHtml = pricingMode === 'auto'
-        ? `<div class="price-row"><span>المفرق:</span><strong>$${p.retailPrice || p.price || 0}</strong></div>
-           <div class="price-row"><span>الجملة (${p.minQty || storeData.settings?.defaultMinQty || 5}+):</span><strong>$${p.wholesalePrice || 0}</strong></div>`
-        : `<div class="price-row"><span>السعر:</span><strong>$${pricingMode === 'wholesale' ? (p.wholesalePrice || 0) : (p.retailPrice || p.price || 0)}</strong></div>`;
+            let priceHtml = pricingMode === 'auto'
+                ? `<div class="price-row"><span>المفرق:</span><strong>$${p.retailPrice || p.price || 0}</strong></div>
+                   <div class="price-row"><span>الجملة (${p.minQty || storeData.settings?.defaultMinQty || 5}+):</span><strong>$${p.wholesalePrice || 0}</strong></div>`
+                : `<div class="price-row"><span>السعر:</span><strong>$${p.retailPrice || p.price || 0}</strong></div>`;
 
-    return `
-      <div class="product-card ${currentQty > 0 ? 'in-cart' : ''}" onclick="handleCardClick('${p.id}')" style="cursor:pointer;">
-        <span class="stock-badge ${st.cls}">${currentQty > 0 ? '✓ في السلة' : st.text}</span>
-        ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width: 100%; height: 240px; object-fit: cover; object-position: center; display: block;">` : ''}
+            return `
+            <div class="product-card ${currentQty > 0 ? 'in-cart' : ''}" onclick="handleCardClick('${p.id}')" style="cursor:pointer;">
+                <span class="stock-badge ${st.cls}">${currentQty > 0 ? '✓ في السلة' : st.text}</span>
+                ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width: 100%; height: 240px; object-fit: cover; object-position: center; display: block;">` : ''}
+                <div class="product-info">
+                    ${p.category ? `<span class="category-tag">${p.category}</span>` : ''}
+                    <div class="product-title">${p.name}</div>
+                    ${p.desc ? `<div class="product-desc">${p.desc}</div>` : ''}
+                    <div class="price-box">${priceHtml}</div>
+                </div>
+                ${currentQty > 0 ? `
+                    <div class="quick-qty-bar" onclick="event.stopPropagation()">
+                        <button class="quick-qty-btn" onclick="changeCardQty('${p.id}', 1)">+</button>
+                        <span class="quick-qty-num">${currentQty}</span>
+                        <button class="quick-qty-btn" onclick="changeCardQty('${p.id}', -1)">-</button>
+                    </div>
+                ` : ''}
+            </div>`;
+        }).join('');
 
-
-        <div class="product-info">
-          ${p.category ? `<span class="category-tag">${p.category}</span>` : ''}
-          <div class="product-title">${p.name}</div>
-          ${p.desc ? `<div class="product-desc">${p.desc}</div>` : ''}
-          <div class="price-box">${priceHtml}</div>
-        </div>
-        ${currentQty > 0 ? `
-          <div class="quick-qty-bar" onclick="event.stopPropagation()">
-            <button class="quick-qty-btn" onclick="changeCardQty('${p.id}', 1)">+</button>
-            <span class="quick-qty-num">${currentQty}</span>
-            <button class="quick-qty-btn" onclick="changeCardQty('${p.id}', -1)">-</button>
-          </div>
-        ` : ''}
-      </div>`;
-  }).join('');
-
-  if (!query && filtered.length > displayLimit) {
-    html += `<div style="grid-column: 1/-1; text-align:center; padding:15px;">
-      <button onclick="displayLimit += 20; renderProducts(false);" class="primary-btn">عرض المزيد</button>
-    </div>`;
-  }
-  grid.innerHTML = html;
-}
-
-function handleCardClick(id) {
-  const existing = cart.find(c => String(c.id) === String(id));
-  if (!existing) {
-    changeCardQty(id, 1, true);
-  }
-}
-
-function changeCardQty(id, delta, showToastMsg = false) {
-  const prod = storeData.products.find(p => String(p.id) === String(id));
-  if (!prod) return;
-
-  const idx = cart.findIndex(c => String(c.id) === String(id));
-  if (idx > -1) {
-    cart[idx].qty += delta;
-    if (cart[idx].qty <= 0) {
-      cart.splice(idx, 1);
+        if (!query && filtered.length > displayLimit) {
+            html += `<div style="grid-column: 1/-1; text-align:center; padding:15px;">
+                <button onclick="displayLimit += 20; renderProducts(false);" class="primary-btn">عرض المزيد</button>
+            </div>`;
+        }
+        grid.innerHTML = html;
     }
-  } else if (delta > 0) {
-    cart.push({
-      id: prod.id,
-      name: prod.name,
-      price: prod.price,
-      wholesalePrice: prod.wholesalePrice || prod.price,
-      minQty: prod.minQty || storeData.settings.defaultMinQty || 5,
-      qty: delta
-    });
-  }
 
-  saveCart();
-  renderProducts(false);
+    function handleCardClick(id) {
+        const existing = cart.find(c => String(c.id) === String(id));
+        if (!existing) {
+            changeCardQty(id, 1, true);
+        }
+    }
 
-  if (showToastMsg && delta > 0) {
-    const toast = document.createElement('div');
-    toast.innerHTML = `✅ تمت إضافة (${prod.name}) <button onclick="changeCardQty('${id}', -1); this.parentElement.remove();" style="background:none;border:none;color:#38bdf8;font-weight:bold;margin-right:8px;cursor:pointer;">تراجع</button>`;
-    toast.style.cssText = 'position:fixed;bottom:22px;right:16px;background:#1e293b;color:#fff;padding:10px 16px;border-radius:30px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.4);font-size:13px;';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-  }
-}
+    function changeCardQty(id, delta, showToastMsg = false) {
+        const prod = storeData.products.find(p => String(p.id) === String(id));
+        if (!prod) return;
 
-function saveCart() {
-  localStorage.setItem('abuMahmoudCart', JSON.stringify(cart));
-  updateCartBadge();
-}
+        const idx = cart.findIndex(c => String(c.id) === String(id));
+        if (idx > -1) {
+            cart[idx].qty += delta;
+            if (cart[idx].qty <= 0) {
+                cart.splice(idx, 1);
+            }
+        } else if (delta > 0) {
+            cart.push({
+                id: prod.id,
+                name: prod.name,
+                retailPrice: prod.retailPrice || prod.price || 0,
+                price: prod.retailPrice || prod.price || 0,
+                wholesalePrice: prod.wholesalePrice || prod.retailPrice || prod.price || 0,
+                minQty: prod.minQty || storeData.settings.defaultMinQty || 5,
+                qty: delta
+            });
+        }
 
-function updateCartBadge() {
-  const total = cart.reduce((sum, item) => sum + item.qty, 0);
-  const topBadge = document.getElementById('cartCount');
-  const floatBadge = document.getElementById('floatingCartCount');
-  if (topBadge) topBadge.textContent = total;
-  if (floatBadge) floatBadge.textContent = total;
-}
+        saveCart();
+        renderProducts(false);
 
+        if (showToastMsg && delta > 0) {
+            const toast = document.createElement('div');
+            toast.innerHTML = `✅ تمت إضافة (${prod.name}) <button onclick="changeCardQty('${id}', -1); this.parentElement.remove();" style="background:none;border:none;color:#38bdf8;font-weight:bold;margin-right:8px;cursor:pointer;">تراجع</button>`;
+            toast.style.cssText = 'position:fixed;bottom:22px;right:16px;background:#1e293b;color:#fff;padding:10px 16px;border-radius:30px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.4);font-size:13px;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem('abuMahmoudCart', JSON.stringify(cart));
+        updateCartBadge();
+    }
+
+    function updateCartBadge() {
+        const total = cart.reduce((sum, item) => sum + item.qty, 0);
+        const topBadge = document.getElementById('cartCount');
+        const floatBadge = document.getElementById('floatingCartCount');
+        if (topBadge) topBadge.textContent = total;
+        if (floatBadge) floatBadge.textContent = total;
+    }
 
     function openCart() {
         renderCart();
@@ -934,8 +962,7 @@ function updateCartBadge() {
         let total = 0;
         list.innerHTML = cart.map((item, idx) => {
             const isWholesale = pricingMode === 'auto' && item.qty >= item.minQty;
-                    const unitPrice = isWholesale ? (item.wholesalePrice || 0) : (item.retailPrice || item.price || 0);
-
+            const unitPrice = Number(isWholesale ? (item.wholesalePrice || 0) : (item.retailPrice || item.price || 0));
             const sub = unitPrice * item.qty;
             total += sub;
             return `
@@ -960,21 +987,20 @@ function updateCartBadge() {
         if (cart[idx].qty <= 0) cart.splice(idx, 1);
         saveCart();
         renderCart();
+        renderProducts(false);
     }
 
     function removeCartItem(idx) {
         cart.splice(idx, 1);
         saveCart();
         renderCart();
+        renderProducts(false);
     }
 
     function toggleShamCash() {
         document.getElementById('shamCashBox').style.display = document.getElementById('paymentMethod').value === 'sham' ? 'block' : 'none';
     }
-
-    
-    
-    function openAdminAuth() {
+        function openAdminAuth() {
         document.getElementById('adminPassInput').value = '';
         openModal('authModal');
     }
@@ -1007,64 +1033,60 @@ function updateCartBadge() {
         const wholesalePrice = parseFloat(document.getElementById('prodWholesale').value);
         const minQty = parseInt(document.getElementById('prodMinQty').value) || 5;
         const desc = document.getElementById('prodDesc').value.trim();
-        const file = document.getElementById('prodImgFile').files[0];
+        const file = document.getElementById('prodImgFile').files;
 
-        if (!name || isNaN(retailPrice) || isNaN(wholesalePrice)) return alert("يرجى إدخال اسم القطعة وسعر المفرق وسعر الجملة");
-
-            let compressedImg = null;
-    if (file) {
-        const base64 = await compressImage(file);
-        try {            const fd = new FormData();
-            fd.append("image", base64.split(','));
-            const upUrl = "https://imgbb.com" + (storeData.settings?.imgbbKey || "e2c6403766810c218d50f68b9b8e1102");
-
-
-            
-const upRes = await fetch(upUrl, { method: "POST", body: fd });
-            
-            const upData = await upRes.json();
-            compressedImg = (upData && upData.success) ? upData.data.url : base64;
-        } catch (e) {
-            compressedImg = base64;
+        if (!name || isNaN(retailPrice) || isNaN(wholesalePrice)) {
+            return alert("يرجى إدخال اسم القطعة وسعر المفرق وسعر الجملة");
         }
-    }
-        
 
+        let compressedImg = null;
+        if (file) {
+            const base64 = await compressImage(file);
+            try {
+                const fd = new FormData();
+                fd.append("image", base64.split(','));
+                const apiKey = storeData.settings?.imgbbKey || "e2c6403766810c218d50f68b9b8e1102";
+                const upUrl = `https://imgbb.com{apiKey}`;
+                const upRes = await fetch(upUrl, { method: "POST", body: fd });
+                const upData = await upRes.json();
+                compressedImg = (upData && upData.success) ? upData.data.url : base64;
+            } catch (e) {
+                compressedImg = base64;
+            }
+        }
 
-            const productObj = {
-        name,
-        category,
-        stock,
-        retailPrice,
-        price: retailPrice,
-        wholesalePrice,
-        minQty,
-        desc
-    };
+        const productObj = {
+            name,
+            category,
+            stock,
+            retailPrice,
+            price: retailPrice,
+            wholesalePrice,
+            minQty,
+            desc
+        };
 
-    if (id) {
-        const idx = storeData.products.findIndex(x => String(x.id) === String(id));
-        if (idx > -1) {
-            storeData.products[idx] = {
-                ...storeData.products[idx],
+        if (id) {
+            const idx = storeData.products.findIndex(x => String(x.id) === String(id));
+            if (idx > -1) {
+                storeData.products[idx] = {
+                    ...storeData.products[idx],
+                    ...productObj,
+                    image: compressedImg || storeData.products[idx].image || ""
+                };
+            }
+        } else {
+            storeData.products.unshift({
+                id: Date.now(),
                 ...productObj,
-                image: compressedImg || storeData.products[idx].image || ""
-            };
+                image: compressedImg || ""
+            });
         }
-    } else {
-        storeData.products.unshift({
-            id: Date.now(),
-            ...productObj,
-            image: compressedImg || ""
-        });
-    }
 
-    resetProdForm();
-    renderProducts();
-    renderAdminProducts();
-    await syncToCloud();
-
-    
+        resetProdForm();
+        renderProducts();
+        renderAdminProducts();
+        await syncToCloud();
     }
 
     function editProduct(id) {
@@ -1087,7 +1109,6 @@ const upRes = await fetch(upUrl, { method: "POST", body: fd });
     function resetProdForm() {
         document.getElementById('editProdId').value = '';
         document.getElementById('prodName').value = '';
-        document.getElementById('prodCategory').value = '';
         document.getElementById('prodStock').value = 'available';
         document.getElementById('prodRetail').value = '';
         document.getElementById('prodWholesale').value = '';
@@ -1130,8 +1151,8 @@ const upRes = await fetch(upUrl, { method: "POST", body: fd });
                 </div>
             </div>`).join('');
     }
-
-    async function compressAllExistingImages() {
+    
+        async function compressAllExistingImages() {
         const btn = document.getElementById('compressAllBtn');
         btn.disabled = true;
         btn.textContent = "⏳ جاري ضغط الصور... يرجى الانتظار";
@@ -1139,20 +1160,16 @@ const upRes = await fetch(upUrl, { method: "POST", body: fd });
         for (let i = 0; i < storeData.products.length; i++) {
             if (storeData.products[i].image && storeData.products[i].image.startsWith('data:image')) {
                 const b64 = await compressBase64(storeData.products[i].image);
-try {
-    const fd = new FormData();
-    fd.append("image", b64.split(',')[1]);
-    const upUrl2 = "https://api.imgbb.com/1/upload?key=8a6af38fcd385eb1c8057e617d7e82c9"
-        ;
-const r = await fetch(upUrl2, { method: "POST", body: fd });
-    
-    
-    const d = await r.json();
-    storeData.products[i].image = (d && d.success) ? d.data.url : b64;
-} catch (e) {
-    storeData.products[i].image = b64;
-}
-
+                try {
+                    const fd = new FormData();
+                    fd.append("image", b64.split(','));
+                    const upUrl2 = "https://imgbb.com";
+                    const r = await fetch(upUrl2, { method: "POST", body: fd });
+                    const d = await r.json();
+                    storeData.products[i].image = (d && d.success) ? d.data.url : b64;
+                } catch (e) {
+                    storeData.products[i].image = b64;
+                }
                 count++;
                 btn.textContent = `⏳ تم ضغط ${count} من ${storeData.products.length} صورة...`;
             }
@@ -1162,9 +1179,10 @@ const r = await fetch(upUrl2, { method: "POST", body: fd });
         renderAdminProducts();
         btn.disabled = false;
         btn.textContent = "✅ تم ضغط جميع الصور بنجاح!";
-        alert(`تم ضغط ${count} صورة وحفظها بنجاح! الآن سيفتح المتجر عند الزبائن بسرعة البرق.`);
+        alert(`تم ضغط ${count} صورة وحفظها بنجاح!`);
     }
-       function renderAdminCategories() {
+
+    function renderAdminCategories() {
         const list = document.getElementById('adminCategoriesList');
         const cats = storeData.categories || [];
         if (cats.length === 0) {
@@ -1218,7 +1236,7 @@ const r = await fetch(upUrl2, { method: "POST", body: fd });
 
     async function deleteCategory(idx) {
         if (!confirm("هل تريد حذف هذا القسم؟")) return;
-        const removed = storeData.categories.splice(idx, 1)[0];
+        const removed = storeData.categories.splice(idx, 1);
         storeData.products.forEach(p => { if (p.category === removed) p.category = ""; });
         await syncToCloud();
         if (selectedCategory === removed) selectedCategory = 'all';
@@ -1269,7 +1287,7 @@ const r = await fetch(upUrl2, { method: "POST", body: fd });
     }
 
     async function saveTheme() {
-        const file = document.getElementById('bgImageFile').files[0];
+        const file = document.getElementById('bgImageFile').files;
         let bgImg = storeData.settings.theme.bgImage;
         if (file) bgImg = await compressImage(file, 900, 0.7);
         storeData.settings.theme = {
@@ -1298,34 +1316,37 @@ const r = await fetch(upUrl2, { method: "POST", body: fd });
         storeData.settings.defaultMinQty = parseInt(document.getElementById('setDefaultMinQty').value) || 5;
         storeData.settings.adminPass = document.getElementById('setAdminPass').value.trim() || "1234";
         storeData.settings.shamAccount = document.getElementById('setShamAccount').value.trim();
-        const file = document.getElementById('setShamQrFile').files[0];
+        const file = document.getElementById('setShamQrFile').files;
         if (file) storeData.settings.shamQr = await compressImage(file, 350, 0.75);
         await syncToCloud();
         applyStoreUI();
         alert("تم حفظ الإعدادات بنجاح!");
-        }
+    }
 
     function openModal(id) {
         document.getElementById(id).style.display = 'block';
-        if (id === 'qrModal') generateStoreQR(); const floatBtn = document.querySelector('.floating-cart-btn'); if (floatBtn) floatBtn.style.display = 'none';
-                if (document.querySelector('.floating-cart-btn')) document.querySelector('.floating-cart-btn').style.display = 'none';
-        
-        
+        if (id === 'qrModal') generateStoreQR();
+        const floatBtn = document.querySelector('.floating-cart-btn');
+        if (floatBtn) floatBtn.style.display = 'none';
     }
-    function toggleAdminMenu(event) {
-  event.stopPropagation();
-  document.getElementById("adminDropdownMenu").classList.toggle("show");
-}
 
-window.addEventListener("click", function() {
-  var dropdown = document.getElementById("adminDropdownMenu");
-  if (dropdown && dropdown.classList.contains("show")) {
-    dropdown.classList.remove("show");
-  }
-});
-    
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; const floatBtn = document.querySelector('.floating-cart-btn'); if (floatBtn) floatBtn.style.display = 'flex';
-                            }
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        const floatBtn = document.querySelector('.floating-cart-btn');
+        if (floatBtn) floatBtn.style.display = 'flex';
+    }
+
+    function toggleAdminMenu(event) {
+        event.stopPropagation();
+        document.getElementById("adminDropdownMenu").classList.toggle("show");
+    }
+
+    window.addEventListener("click", function() {
+        const dropdown = document.getElementById("adminDropdownMenu");
+        if (dropdown && dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+        }
+    });
 
     function generateStoreQR() {
         const qrDiv = document.getElementById('storeQrCode');
@@ -1341,8 +1362,6 @@ window.addEventListener("click", function() {
         }, 100);
     }
 
-
-
     function copyStoreLink() {
         navigator.clipboard.writeText(window.location.href);
         alert("تم نسخ رابط المتجر بنجاح!");
@@ -1356,443 +1375,205 @@ window.addEventListener("click", function() {
         }
     }
 
-    document.getElementById('loadingOverlay').style.display = 'none';
-const gridEl = document.getElementById('productsGrid');
-if (gridEl && (!storeData.products || storeData.products.length === 0)) {
-    gridEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">⏳ جاري تحميل قطع الغيار...</div>';
-}
-initCloudStore();
+        async function submitOrder(actionType) {
+        if (!cart || cart.length === 0) return alert('السلة فارغة!');
 
-</script>
-<!-- مكتبة تحويل الفاتورة إلى صورة عالية الجودة -->
-<script src="https://cloudflare.com"></script>
-    
+        const name = document.getElementById('custName').value.trim();
+        const phone = document.getElementById('custPhone').value.trim();
+        const address = document.getElementById('custAddress').value.trim();
+        const method = document.getElementById('paymentMethod').value;
+        const txId = document.getElementById('shamTxId').value.trim();
 
-<!-- نافذة الفاتورة المطابقة لتصميم وكالة أبو محمود بالحرف -->
-<div id="invoiceModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; overflow:auto; padding:12px; flex-direction:column; align-items:center;">
-    
-    <!-- أزرار التحكم -->
-    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; width:100%; max-width:680px;">
-        <button type="button" onclick="downloadInvoiceImage()" style="background:#16a34a; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer; flex:1; min-width:150px;">📥 حفظ الفاتورة كصورة</button>
-        <button type="button" onclick="sendWhatsAppAfterInvoice()" style="background:#25d366; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer; flex:1; min-width:150px;">💬 إرسال الفاتورة للواتساب</button>
-        <button type="button" onclick="closeInvoiceModal()" style="background:#dc2626; color:#fff; border:none; padding:12px 16px; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer;">✖ إغلاق</button>
-    </div>
+        if (!name || !phone || !address) {
+            return alert('يرجى تعبئة الاسم ورقم الهاتف والعنوان!');
+        }
+        if (method === 'sham' && !txId) {
+            return alert('يرجى إدخال رقم عملية الدفع في شام كاش!');
+        }
 
-    <!-- حاوية التمرير الأفقي للهاتف للحفاظ على أبعاد الفاتورة الأصلية 100% -->
-    <div style="width:100%; max-width:680px; overflow-x:auto; border-radius:4px; box-shadow:0 12px 35px rgba(0,0,0,0.6);">
-        
-        <!-- جسم الفاتورة المطابق للصورة الأصلية بمقاس ثابت 680px -->
-        <div id="invoiceCaptureArea" dir="rtl" style="width:680px; min-width:680px; background:#ffffff; color:#09428c; font-family:'Cairo', Tahoma, Arial, sans-serif; border:2px solid #09428c; position:relative; overflow:hidden; box-sizing:border-box;">
-            
-            <!-- الزخرفة الهندسية الزرقاء في الزاوية العلوية اليسرى -->
-            <svg viewBox="0 0 220 120" style="position:absolute; top:0; left:0; width:210px; height:115px; z-index:1; pointer-events:none;">
-                <path d="M0,0 L210,0 C160,15 130,65 0,95 Z" fill="#8cc6ec" opacity="0.55"/>
-                <path d="M0,0 L175,0 C130,15 105,55 0,78 Z" fill="#1b75bc" opacity="0.8"/>
-                <path d="M0,0 L140,0 C105,12 85,42 0,60 Z" fill="#09428c"/>
-            </svg>
+        let calculatedTotal = 0;
+        let itemsText = "";
+        const invoiceItems = [];
 
-            <!-- الترويسة -->
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px 8px; position:relative; z-index:2;">
-                
-                <!-- يمين: الشعار الدائري -->
-                <div style="width:105px; height:105px; border:4px solid #09428c; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#ffffff; box-shadow:0 2px 6px rgba(9,66,140,0.18); flex-shrink:0;">
-                    <span style="font-size:44px; line-height:1;">🏍️</span>
-                    <span id="invSerial" style="background:#09428c; color:#ffffff; font-size:11px; padding:1px 14px; border-radius:10px; margin-top:4px; font-weight:800; letter-spacing:1px;">0001</span>
-                </div>
+        cart.forEach(item => {
+            const minQty = item.minQty || storeData.settings?.defaultMinQty || 5;
+            const isWholesale = pricingMode === 'auto' && item.qty >= minQty;
+            const unitPrice = Number(isWholesale ? (item.wholesalePrice || 0) : (item.retailPrice || item.price || 0));
+            const lineTotal = unitPrice * item.qty;
+            calculatedTotal += lineTotal;
 
-                <!-- وسط: اسم الوكالة والنجوم -->
-                <div style="text-align:center; flex:1; padding:0 10px;">
-                    <h1 style="margin:0; font-size:34px; font-weight:900; color:#09428c; white-space:nowrap; line-height:1.15;">وكالة أبو محمود</h1>
-                    <div style="font-size:18px; font-weight:800; color:#09428c; margin-top:4px; white-space:nowrap;">لقطع الدراجات النارية</div>
-                    <div style="color:#09428c; font-size:14px; margin-top:4px; letter-spacing:6px;">★ ★ ★</div>
-                </div>
-
-                <!-- يسار: كبسولات الهاتف والعنوان -->
-                <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0; margin-top:14px;">
-                    <div style="background:#09428c; color:#ffffff; padding:5px 14px 5px 8px; border-radius:20px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:165px;">
-                        <span dir="ltr" style="letter-spacing:0.5px;">0954730783</span>
-                        <span style="background:#ffffff; color:#09428c; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">📞</span>
-                    </div>
-                    <div style="background:#09428c; color:#ffffff; padding:5px 14px 5px 8px; border-radius:20px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:165px;">
-                        <span>العنوان : العيون</span>
-                        <span style="background:#ffffff; color:#09428c; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">📍</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- الخط الأفقي الفاصل -->
-            <div style="height:2px; background:#09428c; margin:6px 22px 10px;"></div>
-
-            <!-- بيانات التاريخ والعميل -->
-            <div style="padding:2px 24px 12px; font-size:15px; font-weight:800; color:#09428c; line-height:2.1;">
-                <div style="display:flex; justify-content:flex-end; align-items:baseline;">
-                    <span>التاريخ :&nbsp;</span>
-                    <span id="invDate" style="border-bottom:2px dotted #09428c; min-width:170px; text-align:center; color:#000000; font-weight:700; display:inline-block; line-height:1.4;"></span>
-                </div>
-                <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
-                    <span style="white-space:nowrap;">المطلوب من السيد :</span>
-                    <span id="invCustName" style="flex:1.4; border-bottom:2px dotted #09428c; text-align:center; color:#000000; font-weight:800; line-height:1.4;"></span>
-                    <span style="white-space:nowrap;">المحترم المقيم في :</span>
-                    <span id="invCustAddress" style="flex:1; border-bottom:2px dotted #09428c; text-align:center; color:#000000; font-weight:800; line-height:1.4;"></span>
-                </div>
-            </div>
-
-            <!-- جدول الفاتورة مع العلامة المائية -->
-            <div style="padding:0 22px; position:relative;">
-                <!-- العلامة المائية في منتصف الجدول -->
-                <div style="position:absolute; top:54%; left:50%; transform:translate(-50%, -50%); opacity:0.14; pointer-events:none; text-align:center; z-index:1; width:280px;">
-                    <div style="width:125px; height:125px; border:6px solid #09428c; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:60px;">🏍️</div>
-                    <div style="background:#09428c; color:#ffffff; font-weight:900; font-size:20px; padding:3px 16px; border-radius:8px; margin-top:8px; display:inline-block;">وكالة أبو محمود</div>
-                    <div style="color:#09428c; font-weight:800; font-size:15px; margin-top:4px;">لقطع الدراجات النارية</div>
-                    <div style="color:#09428c; font-size:14px; letter-spacing:4px;">★ ★ ★</div>
-                </div>
-
-                <table style="width:100%; border-collapse:collapse; border:2px solid #09428c; position:relative; z-index:2; text-align:center; font-size:14px;">
-                    <thead>
-                        <tr style="background:linear-gradient(180deg, #1b75bc 0%, #09428c 100%); color:#ffffff; font-weight:800; height:40px;">
-                            <th style="border:1.5px solid #09428c; width:19%;">السعر الإجمالي</th>
-                            <th style="border:1.5px solid #09428c; width:41%;">نوع المنتج</th>
-                            <th style="border:1.5px solid #09428c; width:10%;">العدد</th>
-                            <th style="border:1.5px solid #09428c; width:13%;">السعر</th>
-                            <th style="border:1.5px solid #09428c; width:17%;">الملاحظات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="invTableBody" style="color:#000000; font-weight:700;"></tbody>
-                </table>
-            </div>
-
-            <!-- سطر المجموع -->
-            <div style="padding:16px 24px 44px; display:flex; align-items:baseline; gap:8px; font-size:17px; font-weight:900; color:#09428c; position:relative; z-index:2;">
-                <span>المجموع :</span>
-                <span id="invTotalAmount" style="border-bottom:2px dotted #09428c; min-width:170px; text-align:center; color:#000000; font-size:19px; line-height:1.4; display:inline-block;"></span>
-                <span>فقط لا غير</span>
-            </div>
-
-            <!-- الزخرفة السفلية الزرقاء المتموجة -->
-            <svg viewBox="0 0 680 42" preserveAspectRatio="none" style="position:absolute; bottom:0; left:0; width:100%; height:40px; z-index:1; pointer-events:none;">
-                <path d="M0,42 L680,42 L680,28 C520,5 320,38 0,10 Z" fill="#8cc6ec" opacity="0.6"/>
-                <path d="M0,42 L680,42 L680,34 C480,15 260,40 0,18 Z" fill="#1b75bc" opacity="0.85"/>
-                <path d="M0,42 L520,42 C340,26 180,40 0,25 Z" fill="#09428c"/>
-            </svg>
-
-        </div>
-    </div>
-</div>
-
-<script>
-    
-    
-    let pendingWhatsAppUrl = "";
-
-window.submitOrder = async function() {
-    if (!cart || cart.length === 0) return alert('السلة فارغة!');
-    const nameEl = document.getElementById('custName') || document.querySelector('#cartModal input[type="text"]');
-    const phoneEl = document.getElementById('custPhone') || document.querySelector('#cartModal input[type="tel"]');
-    const addrEl = document.getElementById('custAddress') || document.querySelectorAll('#cartModal input[type="text"]')[1];
-    const methodEl = document.getElementById('payMethod');
-    const txEl = document.getElementById('shamTxId');
-
-    const name = (nameEl ? nameEl.value : '').trim();
-    const phone = (phoneEl ? phoneEl.value : '').trim();
-    const address = (addrEl ? addrEl.value : '').trim();
-    const method = methodEl ? methodEl.value : 'cod';
-    const txId = (txEl ? txEl.value : '').trim();
-
-    if (!name || !phone || !address) return alert('يرجى تعبئة الاسم ورقم الهاتف والعنوان!');
-    if (method === 'sham' && !txId) return alert('يرجى إدخال رقم عملية الدفع في شام كاش!');
-
-    let calculatedTotal = 0;
-    let itemsText = "";
-    const invoiceItems = [];
-
-    cart.forEach(item => {
-        const minQty = item.minQty || (storeData.settings && storeData.settings.defaultMinQty) || 5;
-        const isWholesale = (typeof pricingMode !== 'undefined') && (pricingMode === 'wholesale' || (pricingMode === 'auto' && item.qty >= minQty));
-        const unitPrice = Number(isWholesale ? (item.wholesalePrice || 0) : (item.retailPrice || item.price || 0));
-        const lineTotal = unitPrice * item.qty;
-        calculatedTotal += lineTotal;
-
-        itemsText += `• ${item.name} (${item.qty} قطعة × $${unitPrice}) = $${lineTotal.toFixed(2)}\n`;
-        invoiceItems.push({
-            name: item.name,
-            qty: item.qty,
-            price: unitPrice,
-            total: lineTotal,
-            note: isWholesale ? 'جملة' : 'مفرق'
+            itemsText += `• ${item.name} (${item.qty} × $${unitPrice}) = $${lineTotal.toFixed(2)} [${isWholesale ? 'جملة' : 'مفرق'}]\n`;
+            invoiceItems.push({
+                name: item.name,
+                qty: item.qty,
+                price: unitPrice,
+                total: lineTotal,
+                note: isWholesale ? 'جملة' : 'مفرق'
+            });
         });
-    });
 
-    const totalStr = calculatedTotal.toFixed(2);
-    const orderObj = {
-        id: Date.now(),
-        date: new Date().toLocaleString('ar-SY'),
-        customer: name,
-        phone,
-        address,
-        payment: method === 'sham' ? `شام كاش (${txId})` : 'الدفع عند الاستلام',
-        items: [...cart],
-        total: totalStr
-    };
+        const totalStr = calculatedTotal.toFixed(2);
+        const paymentText = method === 'sham' ? `شام كاش (رقم العملية: ${txId})` : 'الدفع عند الاستلام';
 
-    try {
-        if (!storeData.orders) storeData.orders = [];
-        storeData.orders.unshift(orderObj);
-        if (typeof syncToCloud === 'function') await syncToCloud();
-    } catch (e) {}
+        const orderObj = {
+            id: Date.now(),
+            date: new Date().toLocaleString('ar-SY'),
+            customer: name,
+            phone: phone,
+            address: address,
+            payment: paymentText,
+            items: [...cart],
+            total: totalStr
+        };
 
-    
+        try {
+            if (!storeData.orders) storeData.orders = [];
+            storeData.orders.unshift(orderObj);
+            await syncToCloud();
+        } catch (e) {
+            console.error(e);
+        }
 
-    showGeneratedInvoice(name, address, invoiceItems, totalStr, orderObj.id);
+        lastWhatsAppMessage =
+            `*فاتورة طلب - متجر أبو محمود*\n` +
+            `👤 *السيد:* ${name}\n` +
+            `📞 *الهاتف:* ${phone}\n` +
+            `📍 *العنوان:* ${address}\n` +
+            `💳 *الدفع:* ${paymentText}\n` +
+            `──────────────\n` +
+            `${itemsText}` +
+            `──────────────\n` +
+            `💰 *المجموع:* $${totalStr} فقط لا غير`;
 
-    cart = [];
-    if (typeof saveCart === 'function') saveCart();
-    if (typeof closeModal === 'function') closeModal('cartModal');
-};
+        showGeneratedInvoice(name, address, invoiceItems, totalStr);
 
+        cart = [];
+        saveCart();
+        renderProducts(false);
+        closeModal('cartModal');
 
-function showGeneratedInvoice(custName, custAddress, items, totalStr, orderId) {
-    const today = new Date();
-    const dateFormatted = `${today.getFullYear()} / ${String(today.getMonth() + 1).padStart(2, '0')} / ${String(today.getDate()).padStart(2, '0')}`;
-    document.getElementById('invDate').innerText = dateFormatted;
-    document.getElementById('invCustName').innerText = custName;
-    document.getElementById('invCustAddress').innerText = custAddress;
-    document.getElementById('invTotalAmount').innerText = `$${totalStr}`;
-    document.getElementById('invSerial').innerText = String(orderId).slice(-4);
-
-    const tbody = document.getElementById('invTableBody');
-    let rowsHtml = "";
-    const minRows = Math.max(14, items.length);
-
-    for (let i = 0; i < minRows; i++) {
-        const rowBg = i % 2 === 1 ? '#e8f1fb' : '#ffffff';
-        if (items[i]) {
-            rowsHtml += `<tr style="background:${rowBg}; height:28px;">
-                <td style="border:1px solid #4a86c5; padding:3px;">$${items[i].total.toFixed(2)}</td>
-                <td style="border:1px solid #4a86c5; padding:3px; text-align:right; padding-right:8px;">${items[i].name}</td>
-                <td style="border:1px solid #4a86c5; padding:3px;">${items[i].qty}</td>
-                <td style="border:1px solid #4a86c5; padding:3px;">$${items[i].price}</td>
-                <td style="border:1px solid #4a86c5; padding:3px; font-size:11px; color:#09428c;">${items[i].note}</td>
-            </tr>`;
-        } else {
-            rowsHtml += `<tr style="background:${rowBg}; height:26px;">
-                <td style="border:1px solid #4a86c5;"></td>
-                <td style="border:1px solid #4a86c5;"></td>
-                <td style="border:1px solid #4a86c5;"></td>
-                <td style="border:1px solid #4a86c5;"></td>
-                <td style="border:1px solid #4a86c5;"></td>
-            </tr>`;
+        if (actionType === 'whatsapp') {
+            setTimeout(() => {
+                sendInvoiceImageToWhatsApp();
+            }, 400);
         }
     }
-    tbody.innerHTML = rowsHtml;
-    document.getElementById('invoiceModal').style.display = 'flex';
-}
 
-async function generateInvoiceCanvas() {
-    const area = document.getElementById('invoiceCaptureArea');
-    return await html2canvas(area, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        windowWidth: 650
-    });
-}
-async function downloadInvoiceImage() {
-async function makeInvoicePdfBlob() {
-  const canvas = await generateInvoiceCanvas();
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-  const bin = atob(dataUrl.split(',').pop());
-  const img = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+    function showGeneratedInvoice(custName, custAddress, items, totalStr) {
+        const today = new Date();
+        const dateFormatted = `${today.getFullYear()} / ${String(today.getMonth() + 1).padStart(2, '0')} / ${String(today.getDate()).padStart(2, '0')}`;
+        document.getElementById('invDate').innerText = dateFormatted;
+        document.getElementById('invCustName').innerText = custName;
+        document.getElementById('invCustAddress').innerText = custAddress;
+        document.getElementById('invTotalAmount').innerText = `$${totalStr}`;
 
-  const w = canvas.width, h = canvas.height;
-  const pw = 420, ph = Math.round((h * pw) / w);
-  const enc = new TextEncoder(), parts = [], offs = {};
-  let len = 0;
-  const add = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
-  const obj = (n, s) => { offs[n] = len; add(n + ' 0 obj\n' + s + '\nendobj\n'); };
+        const tbody = document.getElementById('invTableBody');
+        let rowsHtml = "";
+        const minRows = Math.max(14, items.length);
 
-  add('%PDF-1.4\n');
-  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
-  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-  obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>');
-  offs[4] = len;
-  add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + img.length + ' >>\nstream\n');
-  add(img);
-  add('\nendstream\nendobj\n');
-  const st = 'q ' + pw + ' 0 0 ' + ph + ' 0 0 cm /Im1 Do Q';
-  obj(5, '<< /Length ' + st.length + ' >>\nstream\n' + st + '\nendstream');
-
-  const xref = len;
-  add('xref\n0 6\n0000000000 65535 f \n');
-  for (let i = 1; i <= 5; i++) add(String(offs[i]).padStart(10, '0') + ' 00000 n \n');
-  add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
-  return new Blob(parts, { type: 'application/pdf' });
-}
-
-async function downloadInvoiceImage() {
-  const blob = await makeInvoicePdfBlob();
-  const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
-  a.click();
-}
-
-async function sendWhatsAppAfterInvoice() {
-  const blob = await makeInvoicePdfBlob();
-  const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
-  const fn = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
-  const file = new File([blob], fn, { type: 'application/pdf' });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    await navigator.share({ files: [file], title: 'فاتورة متجر أبو محمود' });
-  } else {
-    downloadInvoiceImage();
-  }
-}
-async function submitOrder() {
-  if (!cart || cart.length === 0) return alert('السلة فارغة!');
-  const name = document.getElementById('custName').value.trim();
-  const phone = document.getElementById('custPhone').value.trim();
-  const address = document.getElementById('custAddress').value.trim();
-  const method = document.getElementById('paymentMethod').value;
-  const txId = (document.getElementById('shamTxId')?.value || '').trim();
-
-  if (!name || !phone || !address) return alert('يرجى تعبئة الاسم والهاتف والعنوان.');
-  if (method === 'shamcash' && !txId) return alert('يرجى إدخال رقم عملية التحويل.');
-
-  let total = 0;
-  let itemsText = '';
-  const items = cart.map(item => {
-    const prod = (storeData.products || []).find(p => p.id === item.id) || item;
-    const price = (typeof getItemUnitPrice === 'function') ? getItemUnitPrice(prod, item.qty) : parseFloat(prod.retailPrice || prod.retail || 0);
-    const sub = price * item.qty;
-    total += sub;
-    const isWh = item.qty >= (prod.minWholesale || storeData.settings?.defaultMinWholesale || 5);
-    itemsText += '- ' + prod.name + ' (' + item.qty + ' × $' + price.toFixed(2) + ') = $' + sub.toFixed(2) + '\n';
-    return { name: prod.name, qty: item.qty, price: price, total: sub, note: isWh ? 'جملة' : 'مفرق' };
-  });
-
-  const d = new Date();
-  const order = {
-async function submitOrder() {
-  const name = document.getElementById('custName').value.trim();
-  const phone = document.getElementById('custPhone').value.trim();
-  const addr = document.getElementById('custAddress').value.trim();
-  const pm = document.getElementById('paymentMethod').value;
-  const tx = (document.getElementById('shamTxId')?.value || '').trim();
-  const totText = (document.getElementById('cartTotal')?.innerText || '0').replace(/[^0-9.]/g, '');
-
-  if (!name || !phone || !addr) return alert('يرجى إدخال الاسم والهاتف والعنوان');
-  if (pm === 'shamcash' && !tx) return alert('يرجى إدخال رقم عملية التحويل');
-
-  const items = [];
-  let lines = '';
-  document.querySelectorAll('#cartItemsContainer > div, #cartItems > div').forEach(row => {
-    const txt = row.innerText.replace(/\s+/g, ' ').trim();
-    if (txt && !txt.includes('فارغة')) {
-      lines += '• ' + txt + '\n';
-      items.push({ name: txt, qty: 1, price: 0, total: 0, note: '' });
+        for (let i = 0; i < minRows; i++) {
+            const rowBg = i % 2 === 1 ? '#e8f1fb' : '#ffffff';
+            if (items[i]) {
+                rowsHtml += `<tr style="background:${rowBg}; height:28px;">
+                    <td style="border:1px solid #4a86c5; padding:3px;">$${items[i].total.toFixed(2)}</td>
+                    <td style="border:1px solid #4a86c5; padding:3px; text-align:right; padding-right:8px;">${items[i].name}</td>
+                    <td style="border:1px solid #4a86c5; padding:3px;">${items[i].qty}</td>
+                    <td style="border:1px solid #4a86c5; padding:3px;">$${items[i].price}</td>
+                    <td style="border:1px solid #4a86c5; padding:3px; font-size:11px; color:#09428c;">${items[i].note}</td>
+                </tr>`;
+            } else {
+                rowsHtml += `<tr style="background:${rowBg}; height:26px;">
+                    <td style="border:1px solid #4a86c5;"></td>
+                    <td style="border:1px solid #4a86c5;"></td>
+                    <td style="border:1px solid #4a86c5;"></td>
+                    <td style="border:1px solid #4a86c5;"></td>
+                    <td style="border:1px solid #4a86c5;"></td>
+                </tr>`;
+            }
+        }
+        tbody.innerHTML = rowsHtml;
+        document.getElementById('invoiceModal').style.display = 'flex';
     }
-  });
-  if (!lines) return alert('السلة فارغة!');
 
-  const d = new Date();
-  const ord = {
-    id: Date.now(),
-    date: d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(),
-    customerName: name, customerPhone: phone, customerAddress: addr,
-    paymentMethod: pm === 'shamcash' ? 'شام كاش (' + tx + ')' : 'عند الاستلام',
-    items: items, total: totText
-  };
+    function closeInvoiceModal() {
+        document.getElementById('invoiceModal').style.display = 'none';
+    }
 
-  try {
-    const dbUrl = 'https://firebaseio.com';
-    const cur = await (await fetch(dbUrl)).json() || {};
-    cur.orders = Array.isArray(cur.orders) ? cur.orders : [];
-    cur.orders.unshift(ord);
-    await fetch(dbUrl, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cur) });
-  } catch (e) {}
+    async function captureInvoiceImageBlob() {
+        const area = document.getElementById('invoiceCaptureArea');
+        const canvas = await html2canvas(area, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => resolve(blob), 'image/png', 1.0);
+        });
+    }
 
-  const msg = '*طلب جديد - متجر أبو محمود*\nالزبون: ' + name + '\nالهاتف: ' + phone + '\nالعنوان: ' + addr + '\nالدفع: ' + ord.paymentMethod + '\n---\n' + lines + '---\n*الإجمالي: $' + totText + '*';
-  window.location.href = 'https://wa.me' + encodeURIComponent(msg);
-}
+    async function downloadInvoiceImageFile() {
+        try {
+            const blob = await captureInvoiceImageBlob();
+            const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `فاتورة-متجر-أبو-محمود-${cust}.png`;
+            a.click();
+        } catch (e) {
+            alert("حدث خطأ أثناء حفظ الفاتورة: " + e.message);
+        }
+    }
 
-async function makeInvoicePdfBlob() {
-  const area = document.getElementById('invoicePrintableArea') || document.querySelector('#invoiceModal div[style*="background"]');
-  const canvas = await html2canvas(area, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-  const bin = atob(canvas.toDataURL('image/jpeg', 0.92).split(',').pop());
-  const img = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
-  const w = canvas.width, h = canvas.height, pw = 420, ph = Math.round((h * pw) / w);
-  const enc = new TextEncoder(), parts = [], offs = {};
-  let len = 0;
-  const add = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
-  const obj = (n, s) => { offs[n] = len; add(n + ' 0 obj\n' + s + '\nendobj\n'); };
-  add('%PDF-1.4\n');
-  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
-  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-  obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>');
-  offs = len;
-  add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + img.length + ' >>\nstream\n');
-  add(img); add('\nendstream\nendobj\n');
-  const st = 'q ' + pw + ' 0 0 ' + ph + ' 0 0 cm /Im1 Do Q';
-  obj(5, '<< /Length ' + st.length + ' >>\nstream\n' + st + '\nendstream');
-  const xref = len; add('xref\n0 6\n0000000000 65535 f \n');
-  for (let i = 1; i <= 5; i++) add(String(offs[i]).padStart(10, '0') + ' 00000 n \n');
-  add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
-  return new Blob(parts, { type: 'application/pdf' });
-}
+    async function sendInvoiceImageToWhatsApp() {
+        const btn = document.getElementById('btnSendWaImg');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = "⏳ جاري تجهيز صورة الفاتورة...";
+        }
+        try {
+            const blob = await captureInvoiceImageBlob();
+            const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+            const fileName = `فاتورة-متجر-أبو-محمود-${cust}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
 
-async function downloadInvoiceImage() {
-  const blob = await makeInvoicePdfBlob();
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'فاتورة-متجر-أبو-محمود.pdf'; a.click();
-}
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'فاتورة متجر أبو محمود',
+                    text: lastWhatsAppMessage
+                });
+                return;
+            }
 
-function sendWhatsAppOnly() {
-  const phone = "963952174376";
-  
-  // جلب بيانات الزبون من الحقول (تأكد من مطابقة الـ IDs إن كانت مختلفة)
-  const inputs = document.querySelectorAll("input, select");
-  const name = inputs[0]?.value || "غير محدد";
-  const custPhone = inputs[1]?.value || "غير محدد";
-  const address = inputs[2]?.value || "غير محدد";
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
 
-  const msg = encodeURIComponent(
-    `طلب جديد من متجر أبو محمود:\n` +
-    `الاسم: ${name}\n` +
-    `الهاتف: ${custPhone}\n` +
-    `العنوان: ${address}`
-  );
+            const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
+            const url = `https://wa.me{waPhone}?text=${encodeURIComponent(lastWhatsAppMessage)}`;
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 600);
+        } catch (e) {
+            const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
+            window.open(`https://wa.me{waPhone}?text=${encodeURIComponent(lastWhatsAppMessage)}`, '_blank');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = "💬 إرسال الفاتورة للواتساب";
+            }
+        }
+    }
 
-  // فتح واتساب مباشرة بدون انتظار الـ PDF
-  window.location.href = `https://wa.me/${phone}?text=${msg}`;
-}
-
-
-  window.onerror = function(msg, url, line) { alert('العطل في سطر: ' + line + '\nالسبب: ' + msg); };
-    
-
-
+    document.getElementById('loadingOverlay').style.display = 'none';
+    const gridEl = document.getElementById('productsGrid');
+    if (gridEl && (!storeData.products || storeData.products.length === 0)) {
+        gridEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">⏳ جاري تحميل قطع الغيار...</div>';
+    }
+    initCloudStore();
 </script>
-    <script>
-function sendWhatsAppOnly() {
-  const phone = "963952174376";
-  const inputs = document.querySelectorAll("input");
-  const name = inputs?.value || "غير محدد";
-  const custPhone = inputs?.value || "غير محدد";
-  const address = inputs?.value || "غير محدد";
-
-  const msg = encodeURIComponent(
-    `طلب جديد - متجر أبو محمود:\n` +
-    `الاسم: ${name}\n` +
-    `الهاتف: ${custPhone}\n` +
-    `العنوان: ${address}`
-  );
-
-  window.location.href = `https://wa.me/${phone}?text=${msg}`;
-}
-    </script>
-    
 </body>
 </html>
 
+    
