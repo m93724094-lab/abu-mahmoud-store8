@@ -1508,16 +1508,61 @@
         document.getElementById('invoiceModal').style.display = 'none';
     }
 
-    async function captureInvoiceImageBlob() {
+        async function captureInvoiceCanvas() {
+        if (typeof html2canvas === 'undefined') {
+            await new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = 'https:/' + '/cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                s.onload = resolve;
+                s.onerror = () => reject(new Error('تعذر تحميل مكتبة التصوير، تحقق من الإنترنت'));
+                document.head.appendChild(s);
+            });
+        }
         const area = document.getElementById('invoiceCaptureArea');
-        const canvas = await html2canvas(area, {
+        return await html2canvas(area, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff'
         });
+    }
+
+    async function captureInvoiceImageBlob() {
+        const canvas = await captureInvoiceCanvas();
         return new Promise((resolve) => {
             canvas.toBlob((blob) => resolve(blob), 'image/png', 1.0);
         });
+    }
+
+    async function captureInvoicePdfBlob() {
+        const canvas = await captureInvoiceCanvas();
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        const bin = atob(dataUrl.split(',')[1]);
+        const img = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+
+        const w = canvas.width, h = canvas.height;
+        const pw = 420, ph = Math.round((h * pw) / w);
+        const enc = new TextEncoder(), parts = [], offs = {};
+        let len = 0;
+        const add = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+        const obj = (n, s) => { offs[n] = len; add(n + ' 0 obj\n' + s + '\nendobj\n'); };
+
+        add('%PDF-1.4\n');
+        obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+        obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+        obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>');
+        offs[4] = len;
+        add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + img.length + ' >>\nstream\n');
+        add(img);
+        add('\nendstream\nendobj\n');
+        const st = 'q ' + pw + ' 0 0 ' + ph + ' 0 0 cm /Im1 Do Q';
+        obj(5, '<< /Length ' + st.length + ' >>\nstream\n' + st + '\nendstream');
+
+        const xref = len;
+        add('xref\n0 6\n0000000000 65535 f \n');
+        for (let i = 1; i <= 5; i++) add(String(offs[i]).padStart(10, '0') + ' 00000 n \n');
+        add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+        return new Blob(parts, { type: 'application/pdf' });
     }
 
     async function downloadInvoiceImageFile() {
@@ -1526,40 +1571,64 @@
             const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `فاتورة-متجر-أبو-محمود-${cust}.png`;
+            a.download = 'فاتورة-متجر-أبو-محمود-' + cust + '.png';
             a.click();
         } catch (e) {
             alert("حدث خطأ أثناء حفظ الفاتورة: " + e.message);
         }
     }
 
-        async function sendInvoiceImageToWhatsApp() {
+    async function sendInvoiceImageToWhatsApp() {
         const btn = document.getElementById('btnSendWaImg');
         if (btn) {
             btn.disabled = true;
-            btn.textContent = "⏳ جاري تجهيز صورة الفاتورة...";
+            btn.textContent = "⏳ جاري تجهيز الفاتورة...";
         }
         const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
         const waUrl = 'https:/' + '/wa.me/' + waPhone + '?text=' + encodeURIComponent(lastWhatsAppMessage);
 
         try {
-            const blob = await captureInvoiceImageBlob();
-            const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
-            const fileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.png';
-            const file = new File([blob], fileName, { type: 'image/png' });
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText("+" + waPhone);
+            }
+        } catch (err) {}
 
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+            const cust = (document.getElementById('invCustName')?.innerText || 'زبون').trim();
+            const imgBlob = await captureInvoiceImageBlob();
+            const imgFileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.png';
+            const imgFile = new File([imgBlob], imgFileName, { type: 'image/png' });
+
+            // 1. إذا كان الجهاز يدعم مشاركة الصور مباشرة
+            if (navigator.canShare && navigator.canShare({ files: [imgFile] })) {
+                alert("📋 تم نسخ رقم المتجر (+" + waPhone + ") تلقائياً!\nاختر واتساب الآن وأرسل الفاتورة إليه.");
                 await navigator.share({
-                    files: [file],
+                    files: [imgFile],
                     title: 'فاتورة متجر أبو محمود',
                     text: lastWhatsAppMessage
                 });
                 return;
             }
 
+            // 2. إذا كان لا يدعم الصور: تحويل الفاتورة إلى ملف PDF
+            const pdfBlob = await captureInvoicePdfBlob();
+            const pdfFileName = 'فاتورة-متجر-أبو-محمود-' + cust + '.pdf';
+            const pdfFile = new File([pdfBlob], pdfFileName, { type: 'application/pdf' });
+
+            if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                alert("📋 تم نسخ رقم المتجر (+" + waPhone + ") تلقائياً!\nاختر واتساب الآن وأرسل ملف الفاتورة PDF إليه.");
+                await navigator.share({
+                    files: [pdfFile],
+                    title: 'فاتورة متجر أبو محمود',
+                    text: lastWhatsAppMessage
+                });
+                return;
+            }
+
+            // 3. في حال عدم دعم المشاركة نهائياً (مثل الكمبيوتر): تنزيل PDF وفتح واتساب برقمك مباشرة
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = fileName;
+            a.href = URL.createObjectURL(pdfBlob);
+            a.download = pdfFileName;
             a.click();
 
             setTimeout(() => {
@@ -1573,7 +1642,8 @@
                 btn.textContent = "💬 إرسال الفاتورة للواتساب";
             }
         }
-        }
+    }
+
     
 
     document.getElementById('loadingOverlay').style.display = 'none';
