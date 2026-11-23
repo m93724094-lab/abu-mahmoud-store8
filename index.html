@@ -1182,8 +1182,12 @@ const apiKey = storeData.settings?.imgbbKey || "e23993fa72c7dd3b3c484cc829588b9c
                 const b64 = await compressBase64(storeData.products[i].image);
                 try {
                     const fd = new FormData();
-                    fd.append("image", b64.split(','));
-                    const upUrl2 = "https://imgbb.com";
+                    fd.append("image", b64.split(',')[1]);
+
+                    const upUrl2 = atob("aHR0cHM6Ly9hcGkuaW1nYmIuY29tLzEvdXBsb2FkP2tleT1lMjM5OTNmYTcyYzdkZDNiM2M0ODRjYzgyOTU4OGI5Yw==");
+                    
+                    
+                    
                     const r = await fetch(upUrl2, { method: "POST", body: fd });
                     const d = await r.json();
                     storeData.products[i].image = (d && d.success) ? d.data.url : b64;
