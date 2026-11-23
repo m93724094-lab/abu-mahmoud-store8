@@ -1544,7 +1544,8 @@
         cachedImgFile = new File([imgBlob], 'فاتورة-متجر-أبو-محمود-' + cust + '.png', { type: 'image/png' });
 
         const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-        const bin = atob(dataUrl.split(','));
+                const bin = atob(dataUrl.substring(dataUrl.indexOf(',') + 1));
+
         const img = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
 
@@ -1559,7 +1560,8 @@
         obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
         obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
         obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im1 4 0 R >> >> /Contents 5 0 R >>');
-        offs = len;
+          offs['4'] = len;
+
         add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + img.length + ' >>\nstream\n');
         add(img);
         add('\nendstream\nendobj\n');
