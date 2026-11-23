@@ -1340,7 +1340,8 @@ const apiKey = storeData.settings?.imgbbKey || "e23993fa72c7dd3b3c484cc829588b9c
         storeData.settings.defaultMinQty = parseInt(document.getElementById('setDefaultMinQty').value) || 5;
         storeData.settings.adminPass = document.getElementById('setAdminPass').value.trim() || "1234";
         storeData.settings.shamAccount = document.getElementById('setShamAccount').value.trim();
-        const file = document.getElementById('setShamQrFile').files;
+        const file = document.getElementById('setShamQrFile').files[0]
+            ;
         if (file) storeData.settings.shamQr = await compressImage(file, 350, 0.75);
         await syncToCloud();
         applyStoreUI();
