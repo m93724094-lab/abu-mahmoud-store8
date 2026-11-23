@@ -1049,7 +1049,8 @@
         const wholesalePrice = parseFloat(document.getElementById('prodWholesale').value);
         const minQty = parseInt(document.getElementById('prodMinQty').value) || 5;
         const desc = document.getElementById('prodDesc').value.trim();
-        const file = document.getElementById('prodImgFile').files;
+        const file = document.getElementById('prodImgFile').files[0];
+
 
         if (!name || isNaN(retailPrice) || isNaN(wholesalePrice)) {
             return alert("يرجى إدخال اسم القطعة وسعر المفرق وسعر الجملة");
