@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر أبو محمود لقطع الدراجات النارية</title>
     <link rel="manifest" href="manifest.json">
-    <script>window.onerror = function(m, u, l) { console.error("الخطأ في سطر: " + l + "\n" + m); };</script>
     
-            <script>
+                <script>
         (function(){
             var s1 = document.createElement('script');
-            s1.src = 'https:/' + '/cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+            s1.src = 'https://jsdelivr.net';
             document.head.appendChild(s1);
 
             var s2 = document.createElement('script');
-            s2.src = 'https:/' + '/cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+            s2.src = 'https://jsdelivr.net';
             document.head.appendChild(s2);
         })();
     </script>
+
+
 
     <style>
         :root {
@@ -26,8 +27,9 @@
             --accent-color: #0011ff;
             --text-main: #ffffff;
             --text-muted: #9ca3af;
-            --border-color: rgba(59, 130, 246, 0.35);
+            --border-color: rgba(59, 130, 246, 0.2);
         }
+
         .floating-cart-btn {
             position: fixed;
             bottom: 20px;
@@ -319,7 +321,8 @@
             <button onclick="openModal('qrModal')">📱 باركود المتجر</button>
             <div class="admin-menu-wrap">
                 <button type="button" class="dots-menu" onclick="toggleAdminMenu(event)" title="خيارات الإدارة">⋮</button>
-                <div id="adminDropdownMenu" class="admin-dropdown">
+                 <div id="adminDropdownMenu" class="admin-dropdown" style="display: none;">
+        
                     <button type="button" onclick="openAdminAuth()">⚙️ الإدارة</button>
                 </div>
             </div>
@@ -456,7 +459,8 @@
             <input type="hidden" id="editProdId">
             <div class="form-group">
                 <label>اسم القطعة *</label>
-                <input type="text" id="prodName" placeholder="مثال: عظمة كربرتور">
+                <input type="text" <input type="text" id="prodName">
+
             </div>
             <div class="form-group">
                 <label>القسم</label>
@@ -1053,9 +1057,11 @@
             const base64 = await compressImage(file);
             try {
                 const fd = new FormData();
-                fd.append("image", base64.split(','));
+                fd.append("image", base64.split(',')[1]);
+
                 const apiKey = storeData.settings?.imgbbKey || "e2c6403766810c218d50f68b9b8e1102";
-                const upUrl = `https://imgbb.com{apiKey}`;
+                const upUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
+
                 const upRes = await fetch(upUrl, { method: "POST", body: fd });
                 const upData = await upRes.json();
                 compressedImg = (upData && upData.success) ? upData.data.url : base64;
