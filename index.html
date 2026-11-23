@@ -505,9 +505,6 @@
                 <label>صورة القطعة (تُضغط تلقائياً):</label>
                 <input type="file" id="prodImgFile" accept="image/*">
                 <a href="https://adobe.com" target="_blank" style="display:block; text-align:center; background:#0284c7; color:#fff; padding:8px 12px; border-radius:8px; text-decoration:none; font-size:0.88rem; font-weight:bold; margin-top:6px;">✨ تفريغ الخلفية مجاناً بدقة استوديو (Adobe)</a>
-          <button type="button" onclick="uploadToImgBB()" style="margin-top:8px; background:#2563eb; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">⬆️ رفع الصورة إلى ImgBB</button>
-<p id="imgbbStatus" style="font-size:0.85rem; margin-top:5px; color:#16a34a;"></p>
-<input type="text" id="imgbbUrlResult" placeholder="سيظهر رابط الصورة هنا تلقائياً" readonly style="margin-top:5px;">
             </div>
             <div style="display:flex; gap:8px; margin-bottom:20px;">
                 <button class="primary-btn" style="flex:1;" onclick="saveProduct()">💾 حفظ القطعة</button>
@@ -1065,7 +1062,8 @@
                 const fd = new FormData();
                 fd.append("image", base64.split(',')[1]);
 
-                const apiKey = storeData.settings?.imgbbKey || "e2c6403766810c218d50f68b9b8e1102";
+const apiKey = storeData.settings?.imgbbKey || "e23993fa72c7dd3b3c484cc829588b9c";
+
                 const upUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
 
                 const upRes = await fetch(upUrl, { method: "POST", body: fd });
@@ -1644,7 +1642,7 @@
     }
     initCloudStore();
     async function uploadToImgBB() {
-  const fileInput = document.getElementById('prodImg');
+  const fileInput = document.getElementById('prodImgFile');
   const statusText = document.getElementById('imgbbStatus');
   const urlInput = document.getElementById('imgbbUrlResult');
   const apiKey = 'e23993fa72c7dd3b3c484cc829588b9c';
@@ -1676,7 +1674,8 @@
   } catch (error) {
     statusText.innerText = '❌ حدث خطأ في الاتصال بالخادم.';
   }
-    }
+}
+
     
 </script>
 </body>
