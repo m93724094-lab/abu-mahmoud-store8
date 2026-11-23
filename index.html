@@ -1589,11 +1589,11 @@
         }
     }
 
-    async function sendInvoiceImageToWhatsApp() {
+        async function sendInvoiceImageToWhatsApp() {
         const btn = document.getElementById('btnSendWaImg');
         if (btn) {
             btn.disabled = true;
-            btn.textContent = "⏳ جاري الفتح...";
+            btn.textContent = "⏳ جاري فتح واتساب...";
         }
 
         const waPhone = (storeData.settings.whatsapp || "963954730783").replace(/[^0-9]/g, '');
@@ -1604,31 +1604,17 @@
                 await buildInvoiceFiles();
             }
 
-            if (navigator.canShare && navigator.canShare({ files: [cachedImgFile] })) {
-                await navigator.share({
-                    files: [cachedImgFile],
-                    title: 'فاتورة متجر أبو محمود'
-                });
-                return;
-            }
-
-            if (navigator.canShare && navigator.canShare({ files: [cachedPdfFile] })) {
-                await navigator.share({
-                    files: [cachedPdfFile],
-                    title: 'فاتورة متجر أبو محمود'
-                });
-                return;
-            }
-
+            const fileToDownload = cachedImgFile || cachedPdfFile;
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(cachedPdfFile);
-            a.download = cachedPdfFile.name;
+            a.href = URL.createObjectURL(fileToDownload);
+            a.download = fileToDownload.name;
             a.click();
-            window.location.href = waUrl;
+
+            setTimeout(() => {
+                window.location.href = waUrl;
+            }, 500);
         } catch (e) {
-            if (e.name !== 'AbortError') {
-                alert("تعذرت المشاركة المباشرة: " + e.message);
-            }
+            window.location.href = waUrl;
         } finally {
             if (btn) {
                 btn.disabled = false;
@@ -1636,6 +1622,7 @@
             }
         }
     }
+
         
 
     document.getElementById('loadingOverlay').style.display = 'none';
