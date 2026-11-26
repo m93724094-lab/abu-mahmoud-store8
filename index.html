@@ -820,11 +820,9 @@
         const select = document.getElementById('prodCategory');
         const cats = storeData.categories || [];
 
-        if (cats.length > 0 && (!selectedCategory || selectedCategory === 'all')) {
-            selectedCategory = cats[0];
-        }
 
-        bar.innerHTML = cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
+            bar.innerHTML = `<button class="cat-btn ${selectedCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all')">الكل</button>` +
+            cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
 
         if (select) {
             select.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
