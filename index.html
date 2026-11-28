@@ -756,12 +756,17 @@
 
         try {
             const controller = new AbortController();
-const [catRes, setRes, prodRes] = await Promise.all([
-    fetch(`${DB_URL}/storeData/categories.json`, { signal: controller.signal }),
-    fetch(`${DB_URL}/storeData/settings.json`, { signal: controller.signal }),
-    fetch(`${DB_URL}/storeData/products.json`, { signal: controller.signal })
+const [catRes, setRes] = await Promise.all([
+    fetch(`${DB_URL}/storeData/categories.json`),
+    fetch(`${DB_URL}/storeData/settings.json`)
 ]);
-const [cats, settings, prods] = await Promise.all([catRes.json(), setRes.json(), prodRes.json()]);
+const [cats, settings] = await Promise.all([catRes.json(), setRes.json()]);
+if (cats) storeData.categories = Array.isArray(cats) ? cats : Object.values(cats);
+if (settings) { storeData.settings = { ...storeData.settings, ...settings }; if (settings.theme) storeData.settings.theme = settings.theme; }
+applyStoreUI();
+renderCategories();
+const prodRes = await fetch(`${DB_URL}/storeData/products.json`);
+const prods = await prodRes.json();
 const data = (cats || settings || prods) ? { categories: cats, settings: settings, products: prods } : null;
 
             if (data) {
