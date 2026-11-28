@@ -756,10 +756,14 @@
 
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-            const res = await fetch(`${DB_URL}/storeData.json`, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            const data = await res.json();
+const [catRes, setRes, prodRes] = await Promise.all([
+    fetch(`${DB_URL}/storeData/categories.json`, { signal: controller.signal }),
+    fetch(`${DB_URL}/storeData/settings.json`, { signal: controller.signal }),
+    fetch(`${DB_URL}/storeData/products.json`, { signal: controller.signal })
+]);
+const [cats, settings, prods] = await Promise.all([catRes.json(), setRes.json(), prodRes.json()]);
+const data = (cats || settings || prods) ? { categories: cats, settings: settings, products: prods } : null;
+
             if (data) {
                 const newStr = JSON.stringify(data);
                 const oldStr = localStorage.getItem('storeData_cache');
@@ -1072,7 +1076,11 @@ if (selectedCategory === 'all' && !query) {
     function checkAdminPass() {
         if (document.getElementById('adminPassInput').value === (storeData.settings.adminPass || '1234')) {
             closeModal('authModal');
-            renderAdminOrders();
+fetch(`${DB_URL}/storeData/orders.json`).then(r => r.json()).then(d => {
+    storeData.orders = d ? (Array.isArray(d) ? d : Object.values(d)) : [];
+    renderAdminOrders();
+});
+
             renderAdminProducts();
             renderAdminCategories();
             openModal('adminModal');
