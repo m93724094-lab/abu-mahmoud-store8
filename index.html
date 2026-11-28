@@ -131,6 +131,13 @@
         }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 15px; }
         .categories-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.category-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); text-align: center; cursor: pointer; transition: 0.2s; }
+.category-card:hover { transform: translateY(-3px); border-color: var(--accent-color); }
+.category-card img { width: 100%; height: 135px; object-fit: cover; display: block; }
+.category-card-placeholder { height: 135px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: rgba(255,255,255,0.05); }
+.category-card-body { padding: 10px; }
+        
         .cat-btn { white-space: nowrap; padding: 8px 15px; font-size: 0.9rem; }
         .search-bar {
             width: 100%;
@@ -343,7 +350,9 @@
             ⚡ الوضع التلقائي مفعّل: أي قطعة تصل كميتها للحد الأدنى المخصص لها تُحسب بسعر الجملة، وما دون ذلك يُحسب بسعر المفرق في نفس الطلب.
         </div>
 
-        <div class="categories-bar" id="categoriesBar"></div>
+        <div class="categories-grid" id="categoriesGrid"></div>
+<div class="categories-bar" id="categoriesBar" style="display:none;"></div>
+
         <input type="text" class="search-bar" id="searchInput" placeholder="🔍 ابحث عن قطعة غيار أو اكسسوار..." oninput="renderProducts()">
         <div class="products-grid" id="productsGrid"></div>
     </div>
@@ -519,11 +528,15 @@
         <div id="categoriesTab" class="tab-pane">
             <h4 style="margin-bottom:12px;">🗂 إدارة أقسام المتجر</h4>
             <input type="hidden" id="editCatIndex">
-            <div style="display:flex; gap:8px; margin-bottom:15px;">
-                <input type="text" id="catNameInput" placeholder="اسم القسم (مثال: محرك، اكسسوارات)" style="flex:1; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-primary); color:var(--text-main);">
-                <button class="primary-btn" id="saveCatBtn" onclick="saveCategory()">➕ إضافة</button>
-                <button type="button" id="cancelCatBtn" style="display:none;" onclick="resetCatForm()">إلغاء</button>
-            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;">
+    <input type="text" id="catNameInput" placeholder="اسم القسم (مثال: محرك، اكسسوارات)" style="padding:10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-primary); color:var(--text-main);">
+    <input type="file" id="catImgFile" accept="image/*" style="padding:8px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-primary); color:var(--text-main);">
+    <div style="display:flex; gap:8px;">
+        <button class="primary-btn" style="flex:1;" id="saveCatBtn" onclick="saveCategory()">➕ إضافة / حفظ القسم</button>
+        <button type="button" id="cancelCatBtn" style="display:none;" onclick="resetCatForm()">إلغاء</button>
+    </div>
+</div>
+
             <div id="adminCategoriesList"></div>
         </div>
 
@@ -815,19 +828,49 @@
         document.getElementById('displayShamQr').innerHTML = s.shamQr ? `<img src="${s.shamQr}" style="max-width:160px; border-radius:8px;">` : '';
     }
 
-    function renderCategories() {
-        const bar = document.getElementById('categoriesBar');
-        const select = document.getElementById('prodCategory');
-        const cats = storeData.categories || [];
+    function getCatName(c) { return typeof c === 'object' ? c.name : c; }
+function getCatImg(c) { return typeof c === 'object' ? (c.image || '') : ''; }
 
+function renderCategories() {
+    const grid = document.getElementById('categoriesGrid');
+    const bar = document.getElementById('categoriesBar');
+    const select = document.getElementById('prodCategory');
+    const cats = storeData.categories || [];
 
-            bar.innerHTML = `<button class="cat-btn ${selectedCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all')">الكل</button>` +
-            cats.map(c => `<button class="cat-btn ${selectedCategory === c ? 'active' : ''}" onclick="selectCategory('${c}')">${c}</button>`).join('');
-
-        if (select) {
-            select.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
-        }
+    if (selectedCategory === 'all') {
+        grid.style.display = 'grid';
+        bar.style.display = 'none';
+        grid.innerHTML = cats.map(c => {
+            const name = getCatName(c);
+            const img = getCatImg(c);
+            const count = storeData.products.filter(p => String(p.category).trim() === String(name).trim()).length;
+            return `
+            <div class="category-card" onclick="selectCategory('${name}')">
+                ${img ? `<img src="${img}" alt="${name}">` : `<div class="category-card-placeholder">🏍️</div>`}
+                <div class="category-card-body">
+                    <div style="font-weight:bold; font-size:1.05rem;">${name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">${count} منتج</div>
+                </div>
+            </div>`;
+        }).join('');
+    } else {
+        grid.style.display = 'none';
+        bar.style.display = 'flex';
+        bar.innerHTML = `<button class="cat-btn primary-btn" onclick="selectCategory('all')">🔙 جميع الأقسام</button>` +
+            cats.map(c => {
+                const name = getCatName(c);
+                return `<button class="cat-btn ${selectedCategory === name ? 'active' : ''}" onclick="selectCategory('${name}')">${name}</button>`;
+            }).join('');
     }
+
+    if (select) {
+        select.innerHTML = cats.map(c => {
+            const name = getCatName(c);
+            return `<option value="${name}">${name}</option>`;
+        }).join('');
+    }
+                        }
+    
 
     function selectCategory(cat) {
         selectedCategory = cat;
@@ -850,6 +893,9 @@
         const grid = document.getElementById('productsGrid');
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
         if (resetLimit && !query) displayLimit = 20;
+        const gridCats = document.getElementById('categoriesGrid');
+if (gridCats) gridCats.style.display = (query || selectedCategory !== 'all') ? 'none' : 'grid';
+        
 
         const filtered = storeData.products.filter(p => {
             const matchSearch = !query || (p.name && String(p.name).toLowerCase().includes(query));
@@ -1205,67 +1251,94 @@ const apiKey = storeData.settings?.imgbbKey || "e23993fa72c7dd3b3c484cc829588b9c
     }
 
     function renderAdminCategories() {
-        const list = document.getElementById('adminCategoriesList');
-        const cats = storeData.categories || [];
-        if (cats.length === 0) {
-            list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">لا توجد أقسام مضافة</p>`;
-            return;
-        }
-        list.innerHTML = cats.map((c, idx) => `
-            <div class="cart-item">
-                <strong>🗂 ${c}</strong>
-                <div style="display:flex; gap:5px;">
-                    <button onclick="editCategory(${idx})" style="padding:5px 10px; font-size:0.85rem;">✏ تعديل</button>
-                    <button onclick="deleteCategory(${idx})" style="background:#991b1b; padding:5px 10px; font-size:0.85rem;">🗑 حذف</button>
-                </div>
-            </div>`).join('');
+    const list = document.getElementById('adminCategoriesList');
+    const cats = storeData.categories || [];
+    if (cats.length === 0) {
+        list.innerHTML = `<p style="text-align:center; color:var(--text-muted);">لا توجد أقسام مضافة</p>`;
+        return;
+    }
+    list.innerHTML = cats.map((c, idx) => {
+        const name = getCatName(c);
+        const img = getCatImg(c);
+        return `
+        <div class="cart-item">
+            <div style="display:flex; align-items:center; gap:10px;">
+                ${img ? `<img src="${img}" style="width:42px; height:42px; object-fit:cover; border-radius:6px;">` : '🗂'}
+                <strong>${name}</strong>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <button onclick="editCategory(${idx})" style="padding:5px 10px; font-size:0.85rem;">✏ تعديل</button>
+                <button onclick="deleteCategory(${idx})" style="background:#991b1b; padding:5px 10px; font-size:0.85rem;">🗑 حذف</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function saveCategory() {
+    const name = document.getElementById('catNameInput').value.trim();
+    const editIdx = document.getElementById('editCatIndex').value;
+    const file = document.getElementById('catImgFile').files[0];
+    if (!name) return alert("يرجى كتابة اسم القسم");
+    if (!storeData.categories) storeData.categories = [];
+
+    let imgUrl = '';
+    if (file) {
+        const base64 = await compressImage(file, 450, 0.8);
+        try {
+            const fd = new FormData();
+            fd.append("image", base64.split(',')[1]);
+            const apiKey = storeData.settings?.imgbbKey || "e23993fa72c7dd3b3c484cc829588b9c";
+            const r = await fetch(`https://imgbb.com{apiKey}`, { method: "POST", body: fd });
+            const d = await r.json();
+            imgUrl = (d && d.success) ? d.data.url : base64;
+        } catch (e) { imgUrl = base64; }
     }
 
-    async function saveCategory() {
-        const name = document.getElementById('catNameInput').value.trim();
-        const editIdx = document.getElementById('editCatIndex').value;
-        if (!name) return alert("يرجى كتابة اسم القسم");
-        if (!storeData.categories) storeData.categories = [];
-
-        if (editIdx !== '') {
-            const oldName = storeData.categories[parseInt(editIdx)];
-            storeData.categories[parseInt(editIdx)] = name;
-            storeData.products.forEach(p => { if (p.category === oldName) p.category = name; });
-        } else {
-            if (storeData.categories.includes(name)) return alert("هذا القسم موجود مسبقاً");
-            storeData.categories.push(name);
-        }
-        await syncToCloud();
-        resetCatForm();
-        renderCategories();
-        renderAdminCategories();
-        renderProducts();
+    if (editIdx !== '') {
+        const idx = parseInt(editIdx);
+        const oldName = getCatName(storeData.categories[idx]);
+        const oldImg = getCatImg(storeData.categories[idx]);
+        storeData.categories[idx] = { name: name, image: imgUrl || oldImg };
+        storeData.products.forEach(p => { if (p.category === oldName) p.category = name; });
+    } else {
+        if (storeData.categories.some(c => getCatName(c) === name)) return alert("هذا القسم موجود مسبقاً");
+        storeData.categories.push({ name: name, image: imgUrl });
     }
 
-    function editCategory(idx) {
-        document.getElementById('editCatIndex').value = idx;
-        document.getElementById('catNameInput').value = storeData.categories[idx];
-        document.getElementById('saveCatBtn').textContent = "💾 حفظ";
-        document.getElementById('cancelCatBtn').style.display = "inline-block";
-    }
+    await syncToCloud();
+    resetCatForm();
+    renderCategories();
+    renderAdminCategories();
+    renderProducts();
+}
 
-    function resetCatForm() {
-        document.getElementById('editCatIndex').value = '';
-        document.getElementById('catNameInput').value = '';
-        document.getElementById('saveCatBtn').textContent = "➕ إضافة";
-        document.getElementById('cancelCatBtn').style.display = "none";
-    }
+function editCategory(idx) {
+    document.getElementById('editCatIndex').value = idx;
+    document.getElementById('catNameInput').value = getCatName(storeData.categories[idx]);
+    document.getElementById('saveCatBtn').textContent = "💾 حفظ التعديل";
+    document.getElementById('cancelCatBtn').style.display = "inline-block";
+}
 
-    async function deleteCategory(idx) {
-        if (!confirm("هل تريد حذف هذا القسم؟")) return;
-        const removed = storeData.categories.splice(idx, 1);
-        storeData.products.forEach(p => { if (p.category === removed) p.category = ""; });
-        await syncToCloud();
-        if (selectedCategory === removed) selectedCategory = 'all';
-        renderCategories();
-        renderAdminCategories();
-        renderProducts();
-    }
+function resetCatForm() {
+    document.getElementById('editCatIndex').value = '';
+    document.getElementById('catNameInput').value = '';
+    document.getElementById('catImgFile').value = '';
+    document.getElementById('saveCatBtn').textContent = "➕ إضافة / حفظ القسم";
+    document.getElementById('cancelCatBtn').style.display = "none";
+}
+
+async function deleteCategory(idx) {
+    if (!confirm("هل تريد حذف هذا القسم؟")) return;
+    const removedName = getCatName(storeData.categories[idx]);
+    storeData.categories.splice(idx, 1);
+    storeData.products.forEach(p => { if (p.category === removedName) p.category = ""; });
+    await syncToCloud();
+    if (selectedCategory === removedName) selectedCategory = 'all';
+    renderCategories();
+    renderAdminCategories();
+    renderProducts();
+}
+
 
     function renderAdminOrders() {
         document.getElementById('ordersCount').textContent = storeData.orders.length;
